@@ -7,13 +7,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 
 import test.yzhk.com.comm.R;
-import test.yzhk.com.comm.UI.pages.InitChat;
-import test.yzhk.com.comm.UI.pages.InitContent;
-import test.yzhk.com.comm.UI.pages.InitMap;
-import test.yzhk.com.comm.UI.pages.InitSelf;
+import test.yzhk.com.comm.UI.fragments.BaseFragment;
+import test.yzhk.com.comm.UI.fragments.ChatFragment;
+import test.yzhk.com.comm.UI.fragments.MapFragment;
+import test.yzhk.com.comm.UI.fragments.SelfFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,12 +49,20 @@ public class MainActivity extends AppCompatActivity {
 
     };
     private BottomNavigationView mNavigation;
-    private FrameLayout mContent;
     private Fragment[] mFragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 判断sdk是否登录成功过，并没有退出和被踢，否则跳转到登陆界面
+//        if (!EMClient.getInstance().isLoggedInBefore()) {
+//            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//            startActivity(intent);
+//            finish();
+//            return;
+//        }
+
+
         setContentView(R.layout.activity_main);
         initView();
 
@@ -64,22 +71,22 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         mNavigation = (BottomNavigationView) findViewById(R.id.navigation);
         mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        mContent = (FrameLayout) findViewById(R.id.content);
         initFragments();
 
     }
 
     private void initFragments() {
-        InitContent initChat = new InitChat(MainActivity.this);
-        InitMap initMap = new InitMap(MainActivity.this);
-        InitSelf initSelf = new InitSelf(MainActivity.this);
-        mFragments = new Fragment[]{initChat, initMap, initSelf};
+        BaseFragment chatFragment = new ChatFragment();
+        BaseFragment mapFragment = new MapFragment();
+        BaseFragment selfFragment = new SelfFragment();
+
+        mFragments = new Fragment[]{chatFragment, mapFragment, selfFragment};
 
         lastShowFragment = 2;
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.content, initSelf)
-                .show(initChat).commit();
+                .add(R.id.content, selfFragment)
+                .show(selfFragment).commit();
 
     }
 
@@ -91,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         }
         transaction.show(mFragments[Index]).commitAllowingStateLoss();
     }
+
 
 
 }
