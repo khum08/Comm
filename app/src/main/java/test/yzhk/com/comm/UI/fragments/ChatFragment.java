@@ -22,7 +22,11 @@ public class ChatFragment extends BaseFragment {
 
     @Override
     public View initView() {
-        mChatView = View.inflate(mContext, R.layout.content_chat, null);
+        mChatView = View.inflate(mContext, R.layout.fragment_chat, null);
+        TextView tv_title = (TextView) mChatView.findViewById(R.id.tv_title);
+        tv_title.setText(R.string.app_name);
+        ImageView iv_add = (ImageView) mChatView.findViewById(R.id.iv_add);
+        iv_add.setVisibility(View.VISIBLE);
         return mChatView;
     }
 
@@ -94,7 +98,6 @@ public class ChatFragment extends BaseFragment {
         public TextView tv_other;
         public ImageView iv_me;
         public ImageView iv_other;
-
 
     }
 }

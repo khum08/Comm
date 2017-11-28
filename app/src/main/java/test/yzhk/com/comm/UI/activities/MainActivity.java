@@ -11,8 +11,9 @@ import android.view.MenuItem;
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.fragments.BaseFragment;
 import test.yzhk.com.comm.UI.fragments.ChatFragment;
-import test.yzhk.com.comm.UI.fragments.MapFragment;
+import test.yzhk.com.comm.UI.fragments.ContactsFragment;
 import test.yzhk.com.comm.UI.fragments.SelfFragment;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_main);
+
         initView();
 
     }
@@ -77,16 +79,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFragments() {
         BaseFragment chatFragment = new ChatFragment();
-        BaseFragment mapFragment = new MapFragment();
+        BaseFragment mapFragment = new ContactsFragment();
         BaseFragment selfFragment = new SelfFragment();
 
         mFragments = new Fragment[]{chatFragment, mapFragment, selfFragment};
 
-        lastShowFragment = 2;
+        lastShowFragment = 0;
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.content, selfFragment)
-                .show(selfFragment).commit();
+                .add(R.id.content, chatFragment)
+                .show(chatFragment).commit();
 
     }
 
@@ -98,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
         }
         transaction.show(mFragments[Index]).commitAllowingStateLoss();
     }
-
 
 
 }

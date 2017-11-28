@@ -1,5 +1,6 @@
 package test.yzhk.com.comm.UI.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
@@ -14,10 +15,12 @@ import test.yzhk.com.comm.UI.activities.LoginActivity;
 public class SelfFragment extends BaseFragment {
 
 
+    public Activity mActivity = (Activity)mContext;
     private View selfPage;
+
     @Override
     public View initView() {
-        selfPage = View.inflate(mContext, R.layout.content_self, null);
+        selfPage = View.inflate(mContext, R.layout.fragment_self, null);
         return selfPage;
     }
 
@@ -30,8 +33,9 @@ public class SelfFragment extends BaseFragment {
                 mContext.startActivity(new Intent(mContext,LoginActivity.class));
             }
         });
-        //// TODO: 2017/11/24  
-
+        //// TODO: 2017/11/24
+        TextView tv_title = (TextView) selfPage.findViewById(R.id.tv_title);
+        tv_title.setText("我");
     }
 
 

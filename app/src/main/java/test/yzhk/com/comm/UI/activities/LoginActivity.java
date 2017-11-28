@@ -4,13 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.app.ProgressDialog;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,6 +28,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.hyphenate.EMCallBack;
+import com.hyphenate.EMError;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,19 +62,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private String mEmail;
+    private String mPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -83,18 +90,25 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button login = (Button) findViewById(R.id.bt_login);
+        final Button register = (Button) findViewById(R.id.bt_register);
+        register.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tryRegister();
+            }
+        });
+        login.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-//                attemptLogin();
-                // TODO: 2017/11/27
-                startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                attemptLogin();
             }
         });
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        TextView tv_title = (TextView) findViewById(R.id.tv_title);
+        tv_title.setText(R.string.login);
     }
 
     private void populateAutoComplete() {
@@ -143,32 +157,29 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     //登录
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString().trim();
-        String password = mPasswordView.getText().toString().trim();
+        mEmail = mEmailView.getText().toString().trim();
+        mPassword = mPasswordView.getText().toString().trim();
 
         boolean cancel = false;
         View focusView = null;
 
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(mPassword) && !isPasswordValid(mPassword)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(mEmail)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!isEmailValid(mEmail)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -180,18 +191,104 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            EMClient.getInstance().login(mEmail, mPassword, new EMCallBack() {
+                /**
+                 * 登陆成功的回调
+                 */
+                @Override
+                public void onSuccess() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // 加载所有会话到内存
+                            EMClient.getInstance().chatManager().loadAllConversations();
+                            // 加载所有群组到内存，如果使用了群组的话
+                            EMClient.getInstance().groupManager().loadAllGroups();
+
+                            // 登录成功跳转界面
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+
+                /**
+                 * 登陆错误的回调
+                 * @param i
+                 * @param s
+                 */
+                @Override
+                public void onError(final int i, final String s) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("lzan13", "登录失败 Error code:" + i + ", message:" + s);
+                            /**
+                             * 关于错误码可以参考官方api详细说明
+                             * http://www.easemob.com/apidoc/android/chat3.0/classcom_1_1hyphenate_1_1_e_m_error.html
+                             */
+                            switch (i) {
+                                // 网络异常 2
+                                case EMError.NETWORK_ERROR:
+                                    Toast.makeText(LoginActivity.this, "网络错误 code: " + i + ", message:" + s, Toast.LENGTH_SHORT).show();
+                                    break;
+                                // 无效的用户名 101
+                                case EMError.INVALID_USER_NAME:
+                                    Toast.makeText(LoginActivity.this, "无效的用户名 code: " + i + ", message:" + s, Toast.LENGTH_SHORT).show();
+                                    break;
+                                // 无效的密码 102
+                                case EMError.INVALID_PASSWORD:
+                                    Toast.makeText(LoginActivity.this, "无效的密码 code: " + i + ", message:" + s, Toast.LENGTH_SHORT).show();
+                                    break;
+                                // 用户认证失败，用户名或密码错误 202
+                                case EMError.USER_AUTHENTICATION_FAILED:
+                                    Toast.makeText(LoginActivity.this, "用户认证失败，用户名或密码错误 code: " + i + ", message:" + s, Toast.LENGTH_SHORT).show();
+                                    break;
+                                // 用户不存在 204
+                                case EMError.USER_NOT_FOUND:
+                                    Toast.makeText(LoginActivity.this, "用户不存在 code: " + i + ", message:" + s, Toast.LENGTH_SHORT).show();
+                                    break;
+                                // 无法访问到服务器 300
+                                case EMError.SERVER_NOT_REACHABLE:
+                                    Toast.makeText(LoginActivity.this, "无法访问到服务器 code: " + i + ", message:" + s, Toast.LENGTH_SHORT).show();
+                                    break;
+                                // 等待服务器响应超时 301
+                                case EMError.SERVER_TIMEOUT:
+                                    Toast.makeText(LoginActivity.this, "等待服务器响应超时 code: " + i + ", message:" + s, Toast.LENGTH_SHORT).show();
+                                    break;
+                                // 服务器繁忙 302
+                                case EMError.SERVER_BUSY:
+                                    Toast.makeText(LoginActivity.this, "服务器繁忙 code: " + i + ", message:" + s, Toast.LENGTH_SHORT).show();
+                                    break;
+                                // 未知 Server 异常 303 一般断网会出现这个错误
+                                case EMError.SERVER_UNKNOWN_ERROR:
+                                    Toast.makeText(LoginActivity.this, "未知的服务器异常 code: " + i + ", message:" + s, Toast.LENGTH_SHORT).show();
+                                    break;
+                                default:
+                                    Toast.makeText(LoginActivity.this, "登录失败 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                    break;
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onProgress(int i, String s) {
+
+                }
+            });
         }
+
+
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -285,61 +382,77 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
+    private ProgressDialog mDialog;
+    //注册方法
+    public void tryRegister(){
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
+        mDialog = new ProgressDialog(this);
+        mDialog.setMessage("注册中，请稍后...");
+        mDialog.show();
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EMClient.getInstance().createAccount(mEmail, mPassword);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!LoginActivity.this.isFinishing()) {
+                                mDialog.dismiss();
+                            }
+                            Toast.makeText(LoginActivity.this, "注册成功", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                } catch (final HyphenateException e) {
+                    e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!LoginActivity.this.isFinishing()) {
+                                mDialog.dismiss();
+                            }
+                            /**
+                             * 关于错误码可以参考官方api详细说明
+                             * http://www.easemob.com/apidoc/android/chat3.0/classcom_1_1hyphenate_1_1_e_m_error.html
+                             */
+                            int errorCode = e.getErrorCode();
+                            String message = e.getMessage();
+                            Log.d("lzan13", String.format("sign up - errorCode:%d, errorMsg:%s", errorCode, e.getMessage()));
+                            switch (errorCode) {
+                                // 网络错误
+                                case EMError.NETWORK_ERROR:
+                                    Toast.makeText(LoginActivity.this, "网络错误 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                // 用户已存在
+                                case EMError.USER_ALREADY_EXIST:
+                                    Toast.makeText(LoginActivity.this, "用户已存在 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                // 参数不合法，一般情况是username 使用了uuid导致，不能使用uuid注册
+                                case EMError.USER_ILLEGAL_ARGUMENT:
+                                    Toast.makeText(LoginActivity.this, "参数不合法，一般情况是username 使用了uuid导致，不能使用uuid注册 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                // 服务器未知错误
+                                case EMError.SERVER_UNKNOWN_ERROR:
+                                    Toast.makeText(LoginActivity.this, "服务器未知错误 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                case EMError.USER_REG_FAILED:
+                                    Toast.makeText(LoginActivity.this, "账户注册失败 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                default:
+                                    Toast.makeText(LoginActivity.this, "ml_sign_up_failed code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
+        }).start();
 
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
     }
+
 }
 
