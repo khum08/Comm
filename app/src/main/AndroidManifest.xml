@@ -26,9 +26,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/MyAppTheme"
-
-        >
+        android:theme="@style/MyAppTheme">
         <activity
             android:name=".UI.activities.MainActivity"
             android:label="@string/app_name">
@@ -71,6 +69,13 @@
         <activity
             android:name=".UI.activities.SettingsActivity"
             android:label="@string/title_activity_settings">
+        </activity>
+        <activity android:name=".UI.activities.FriDetailActivity">
+        </activity>
+        <activity
+            android:name=".UI.activities.SingleRoomActivity"
+            android:label="@string/title_activity_single_room"
+            android:theme="@style/MyAppTheme">
         </activity>
     </application>
 

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:me="http://schemas.test.yzhk.com"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="test.yzhk.com.comm.UI.activities.FriDetailActivity"
+    android:orientation="vertical">
+
+    <include layout="@layout/custom_actionbar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher"
+            android:layout_margin="@dimen/dp20"/>
+    </LinearLayout>
+
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_remove"
+        me:iv_left="@drawable/ic_delete"
+        me:settingName="删除好友"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_more"
+        me:iv_left="@drawable/ic_more"
+        me:settingName="更多"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/white"/>
+
+    <Button
+        android:id="@+id/bt_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp22"
+        android:layout_marginRight="@dimen/dp22"
+        android:background="@drawable/button_background"
+        android:text="发消息"
+        android:textColor="@color/white"/>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:background="@color/white"/>
+    <Button
+        android:id="@+id/bt_audio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp22"
+        android:layout_marginRight="@dimen/dp22"
+        android:background="@drawable/button_background_white"
+        android:text="语音聊天"
+        android:textColor="@color/black"/>
+
+</LinearLayout>

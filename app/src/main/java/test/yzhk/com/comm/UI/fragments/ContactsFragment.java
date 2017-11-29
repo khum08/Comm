@@ -2,11 +2,13 @@ package test.yzhk.com.comm.UI.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import com.hyphenate.exceptions.HyphenateException;
 import java.util.List;
 
 import test.yzhk.com.comm.R;
+import test.yzhk.com.comm.UI.activities.FriDetailActivity;
 import test.yzhk.com.comm.utils.Toastutil;
 
 /**
@@ -51,9 +54,11 @@ public class ContactsFragment extends BaseFragment {
     public View initView() {
 
         mContactsView = View.inflate(mContext, R.layout.fragment_contact, null);
+
         mLv_contact = (ListView) mContactsView.findViewById(R.id.lv_contact);
         tv_title = (TextView) mContactsView.findViewById(R.id.tv_title);
         tv_title.setText("通讯录");
+
         iv_add = (ImageView) mContactsView.findViewById(R.id.iv_add);
         iv_add.setVisibility(View.VISIBLE);
         iv_add.setOnClickListener(new View.OnClickListener() {
@@ -141,6 +146,17 @@ public class ContactsFragment extends BaseFragment {
                 }
             }
         }.start();
+
+        mLv_contact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String friName = mContactsAdapter.getItem(position);
+                Intent intent = new Intent(mContext,FriDetailActivity.class);
+                intent.putExtra("friName",friName);
+                startActivity(intent);
+
+            }
+        });
 
 
     }
