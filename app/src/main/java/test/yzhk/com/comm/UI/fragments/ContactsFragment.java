@@ -1,6 +1,5 @@
 package test.yzhk.com.comm.UI.fragments;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
@@ -14,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.exceptions.HyphenateException;
 
@@ -40,12 +38,11 @@ public class ContactsFragment extends BaseFragment {
 
     public Handler mHandler = new Handler() {
 
-
-
         @Override
         public void handleMessage(Message msg) {
             mContactsAdapter = new contactsAdapter();
             mLv_contact.setAdapter(mContactsAdapter);
+
         }
     };
 
@@ -78,35 +75,45 @@ public class ContactsFragment extends BaseFragment {
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 EditText et_mail = (EditText) dialogView.findViewById(R.id.et_email);
                 final String email = et_mail.getText().toString().trim();
                 EditText et_desc = (EditText) dialogView.findViewById(R.id.et_desc);
-                String desc = et_desc.getText().toString().trim();
-                if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(desc)){
-                    if(email.contains("@")){
-                        EMClient.getInstance().contactManager().aysncAddContact(email, desc, new EMCallBack() {
-                            @Override
-                            public void onSuccess() {
-                                Toastutil.showToast((Activity)mContext,"添加成功");
-                                mUsernames.add(0,email);
-                                mContactsAdapter.notifyDataSetChanged();
-                            }
-                            @Override
-                            public void onError(int i, String s) {
-                                Toastutil.showToast((Activity)mContext,"添加失败,请重试");
-                            }
+                final String desc = et_desc.getText().toString().trim();
 
-                            @Override
-                            public void onProgress(int i, String s) {
+                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(desc)) {
+                    if (email.length() > 2) {
+                        if (!email.equals(EMClient.getInstance().getCurrentUser())) {
+                            new Thread() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        EMClient.getInstance().contactManager().addContact(email, desc);
+                                        Toastutil.showToast(mContext, "好友添加成功");
+                                        mContext.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                mUsernames.add(0, email);
+                                                mContactsAdapter.notifyDataSetChanged();
+                                            }
+                                        });
 
-                            }
-                        });
-                    }else{
-                        Toastutil.showToast((Activity)mContext,"请输入正确的邮箱地址");
+                                    } catch (HyphenateException e) {
+                                        e.printStackTrace();
+                                        Toastutil.showToast(mContext, "好友添加失败");
+                                    }
+                                }
+                            }.start();
+                        } else {
+                            Toastutil.showToast(mContext, "不能添加自己为好友哦");
+                        }
+
+                    } else {
+                        Toastutil.showToast(mContext, "用户名必须大于三位哦");
                     }
 
-                }else{
-                    Toastutil.showToast((Activity) mContext,"输入框不能为空哦");
+                } else {
+                    Toastutil.showToast(mContext, "输入框不能为空哦");
                 }
 
                 dialog.dismiss();
@@ -125,11 +132,10 @@ public class ContactsFragment extends BaseFragment {
             public void run() {
                 try {
                     mUsernames = EMClient.getInstance().contactManager().getAllContactsFromServer();
-                    mHandler.sendEmptyMessage(0);
                     if (mUsernames != null && mUsernames.size() == 0) {
-                        Toastutil.showToast((Activity) mContext, "暂时还没有好友哦");
+                        Toastutil.showToast(mContext, "暂时还没有好友哦");
                     }
-
+                    mHandler.sendEmptyMessage(0);
                 } catch (HyphenateException e) {
                     e.printStackTrace();
                 }
@@ -164,13 +170,13 @@ public class ContactsFragment extends BaseFragment {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.list_item_contact, null);
 
-                viewHolder.iv_contact_icon = (ImageView) convertView.findViewById(R.id.iv_contact_icon);
+//                viewHolder.iv_contact_icon = (ImageView) convertView.findViewById(R.id.iv_contact_icon);
                 viewHolder.tv_contact = (TextView) convertView.findViewById(R.id.tv_contact_name);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.iv_contact_icon.setImageResource(R.mipmap.ic_launcher);
+//            viewHolder.iv_contact_icon.setImageResource(R.mipmap.ic_launcher);
             viewHolder.tv_contact.setText(getItem(position));
 
             return convertView;

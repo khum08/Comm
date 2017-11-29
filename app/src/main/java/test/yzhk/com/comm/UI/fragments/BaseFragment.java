@@ -1,12 +1,13 @@
 package test.yzhk.com.comm.UI.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import test.yzhk.com.comm.UI.activities.MainActivity;
 
 /**
  * Created by 大傻春 on 2017/11/24.
@@ -15,14 +16,14 @@ import android.view.ViewGroup;
 public abstract class BaseFragment extends Fragment {
 
 
-    public Context mContext;
+    public MainActivity mContext;
 
     public abstract View initView();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = getActivity();
+        mContext = (MainActivity) getActivity();
     }
 
     @Nullable

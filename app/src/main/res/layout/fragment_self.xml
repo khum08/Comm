@@ -11,46 +11,58 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3.5"
+        android:layout_height="wrap_content"
         android:background="@drawable/user_background"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:weightSum="1">
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/sym_def_app_icon"
-            android:layout_marginTop="@dimen/dp20"/>
+            android:layout_marginTop="@dimen/dp20"
+            android:layout_weight="0.56"
+            android:src="@android:drawable/sym_def_app_icon"/>
+
         <TextView
-            android:id="@+id/tv_signin"
+            android:id="@+id/tv_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/action_sign_in"
             android:layout_marginTop="@dimen/dp10"
-            android:textSize="@dimen/dp18"
             android:padding="@dimen/dp12"
-            />
-        <TextView
-            android:id="@+id/tv_self"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="@string/action_sign_in"
-            android:layout_marginTop="15dp"
             android:textSize="@dimen/dp18"
-            android:padding="@dimen/dp12"
-            android:visibility="gone"
             />
 
+
     </LinearLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/white"/>
+
     <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_signout"
         tools:iv_left="@android:drawable/sym_def_app_icon"
         tools:settingName="退出登录"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
     <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_register_login"
         tools:iv_left="@android:drawable/sym_def_app_icon"
-        tools:settingName="钱包"
+        tools:settingName="注册或登录"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/white"/>
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_setting"
+        tools:iv_left="@android:drawable/sym_def_app_icon"
+        tools:settingName="设置"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />

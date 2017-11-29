@@ -30,6 +30,7 @@ public class MyApplication extends Application {
         initEasemob();
     }
 
+
     private void initEasemob() {
         int pid = Process.myPid();
         String appName = getAppName(pid);
