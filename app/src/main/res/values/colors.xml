@@ -4,6 +4,7 @@
     <color name="white">#fff</color>
     <color name="white_">#fff4f4f4</color>
     <color name="black">#000</color>
+    <color name="name">#00897b</color>
     <color name="blue2white">#883F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#7986cd</color>

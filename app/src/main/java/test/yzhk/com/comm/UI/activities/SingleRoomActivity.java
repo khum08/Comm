@@ -1,14 +1,18 @@
 package test.yzhk.com.comm.UI.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,7 +32,7 @@ import java.util.List;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.domain.ConversationBean;
-import test.yzhk.com.comm.utils.parseMessage;
+import test.yzhk.com.comm.engine.ParseMessages;
 
 
 public class SingleRoomActivity extends AppCompatActivity {
@@ -55,6 +59,9 @@ public class SingleRoomActivity extends AppCompatActivity {
             }
         }
     };
+    private ImageView mIv_voice;
+    private Button mBt_talk;
+    private ImageView mIv_keyboard;
 
 
     @Override
@@ -75,9 +82,34 @@ public class SingleRoomActivity extends AppCompatActivity {
     }
 
     private void startChat() {
-        //发送消息
+        //监听输入框 弹出发送按钮
         mEt_chatcontent = (EditText) findViewById(R.id.et_chatcontent);
-        Button bt_send = (Button) findViewById(R.id.bt_send);
+        final Button bt_send = (Button) findViewById(R.id.bt_send);
+        final ImageView iv_add_choice = (ImageView) findViewById(R.id.iv_add_choice);
+
+        mEt_chatcontent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().length()>0){
+                    bt_send.setVisibility(View.VISIBLE);
+                    iv_add_choice.setVisibility(View.GONE);
+                }else{
+                    bt_send.setVisibility(View.GONE);
+                    iv_add_choice.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        //发送消息
         bt_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,9 +119,9 @@ public class SingleRoomActivity extends AppCompatActivity {
                     mEt_chatcontent.setText("");
 
                     //创建一条文本消息，text为消息文字内容，mUserName为对方用户或者群聊的id，
-//                    EMMessage message = EMMessage.createTxtSendMessage(text, mUserName);
-//                    //异步发送消息
-//                    EMClient.getInstance().chatManager().sendMessage(message);
+                    EMMessage message = EMMessage.createTxtSendMessage(text, mUserName);
+                    //异步发送消息
+                    EMClient.getInstance().chatManager().sendMessage(message);
 
                     //集合变化
                     if (mConvationList != null) {
@@ -110,6 +142,44 @@ public class SingleRoomActivity extends AppCompatActivity {
         //接收消息
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
 
+        //语音框和键盘框的转换
+        mIv_voice = (ImageView) findViewById(R.id.iv_voice);
+        mBt_talk = (Button) findViewById(R.id.bt_talk);
+
+        mIv_keyboard = (ImageView) findViewById(R.id.iv_keyboard);
+
+        mIv_voice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEt_chatcontent.setVisibility(View.GONE);
+                mIv_voice.setVisibility(View.GONE);
+
+                mBt_talk.setVisibility(View.VISIBLE);
+                mIv_keyboard.setVisibility(View.VISIBLE);
+                showKeyboard();
+
+            }
+        });
+        mIv_keyboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEt_chatcontent.setVisibility(View.VISIBLE);
+                mIv_voice.setVisibility(View.VISIBLE);
+
+                mBt_talk.setVisibility(View.GONE);
+                mIv_keyboard.setVisibility(View.GONE);
+                showKeyboard();
+            }
+        });
+
+    }
+
+    //键盘的
+    public void showKeyboard(){
+        mEt_chatcontent.requestFocus();//输入框获取焦点
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//开启或者关闭软键盘
+        imm.showSoftInput(mEt_chatcontent,InputMethodManager.SHOW_FORCED);//弹出软键盘时，焦点定位在输入框中
     }
 
     public EMMessageListener msgListener = new EMMessageListener() {
@@ -117,7 +187,7 @@ public class SingleRoomActivity extends AppCompatActivity {
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
             //收到消息
-            ArrayList<ConversationBean> moreList = parseMessage.parse(messages);
+            ArrayList<ConversationBean> moreList = ParseMessages.parse(messages);
             mConvationList.addAll(moreList);
             mChatAdapter.notifyDataSetChanged();
         }
@@ -173,7 +243,7 @@ public class SingleRoomActivity extends AppCompatActivity {
                     //SDK初始化加载的聊天记录为20条，到顶时需要去DB里获取更多
                     //获取startMsgId之前的pagesize条消息，此方法获取的messages SDK会自动存入到此会话中，APP中无需再次把获取到的messages添加到会话中
                     //List<EMMessage> messages = conversation.loadMoreMsgFromDB(startMsgId, pagesize);
-                    mConvationList = parseMessage.parse(mMessages);
+                    mConvationList = ParseMessages.parse(mMessages);
 
                 }
                 mHandler.sendEmptyMessage(0);

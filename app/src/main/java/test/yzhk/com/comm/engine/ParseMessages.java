@@ -1,4 +1,4 @@
-package test.yzhk.com.comm.utils;
+package test.yzhk.com.comm.engine;
 
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
@@ -14,7 +14,7 @@ import test.yzhk.com.comm.domain.ConversationBean;
  * Created by 大傻春 on 2017/11/30.
  */
 
-public class parseMessage {
+public class ParseMessages {
 
     /**
      *

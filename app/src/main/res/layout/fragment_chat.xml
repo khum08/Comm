@@ -4,7 +4,8 @@
                 android:layout_height="match_parent"
     >
 
-    <include layout="@layout/custom_actionbar"/>
+    <include layout="@layout/custom_actionbar"
+        />
     <ListView
         android:id="@+id/lv_chat"
         android:layout_width="match_parent"

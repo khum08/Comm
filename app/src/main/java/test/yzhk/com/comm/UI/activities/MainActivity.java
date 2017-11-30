@@ -60,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     };
     private BottomNavigationView mNavigation;
     private Fragment[] mFragments;
+    private BaseFragment mChatFragment;
+    private BaseFragment mMapFragment;
+    private BaseFragment mSelfFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         initView();
         checkConnect();
 //        addFri();
+        initFragments();
 
     }
 
@@ -206,15 +210,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        initFragments();
+
     }
 
     private void initFragments() {
-        BaseFragment chatFragment = new ChatFragment();
-        BaseFragment mapFragment = new ContactsFragment();
-        BaseFragment selfFragment = new SelfFragment();
+        mChatFragment = new ChatFragment();
+        mMapFragment = new ContactsFragment();
+        mSelfFragment = new SelfFragment();
 
-        mFragments = new Fragment[]{chatFragment, mapFragment, selfFragment};
+        mFragments = new Fragment[]{mChatFragment, mMapFragment, mSelfFragment};
 
         lastShowFragment = 0;
         switchFragment(lastShowFragment,0);
@@ -230,5 +234,18 @@ public class MainActivity extends AppCompatActivity {
         transaction.show(mFragments[Index]).commitAllowingStateLoss();
     }
 
-
+    //防止重复加载
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (mChatFragment == null && fragment instanceof ChatFragment)
+            mChatFragment = (BaseFragment) fragment;
+        if (mMapFragment == null && fragment instanceof ContactsFragment)
+            mMapFragment = (BaseFragment) fragment;
+        if (mSelfFragment == null && fragment instanceof SelfFragment)
+            mSelfFragment = (BaseFragment) fragment;
+    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+//        super.onSaveInstanceState(outState, outPersistentState);
+//    }
 }
