@@ -51,7 +51,7 @@
         />
     <test.yzhk.com.comm.UI.view.SettingItemView
         android:id="@+id/item_register_login"
-        tools:iv_left="@drawable/ic_login"
+        tools:iv_left="@drawable/ic_delete"
         tools:settingName="注册或登录"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

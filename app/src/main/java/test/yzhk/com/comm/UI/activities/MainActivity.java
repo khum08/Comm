@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
                         switchFragment(lastShowFragment, 1);
                         lastShowFragment = 1;
                     }
-
                     return true;
                 case R.id.navigation_self:
                     if (lastShowFragment != 2) {
@@ -72,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
-
 
         setContentView(R.layout.activity_main);
 
@@ -200,8 +198,15 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         mNavigation = (BottomNavigationView) findViewById(R.id.navigation);
         mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        initFragments();
 
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initFragments();
     }
 
     private void initFragments() {
@@ -212,16 +217,13 @@ public class MainActivity extends AppCompatActivity {
         mFragments = new Fragment[]{chatFragment, mapFragment, selfFragment};
 
         lastShowFragment = 0;
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.content, chatFragment)
-                .show(chatFragment).commit();
-
+        switchFragment(lastShowFragment,0);
     }
 
     public void switchFragment(int lastIndex, int Index) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(mFragments[lastIndex]);
+
         if (!mFragments[Index].isAdded()) {
             transaction.add(R.id.content, mFragments[Index]);
         }

@@ -7,8 +7,8 @@
         android:id="@+id/iv_contact_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher"
-        android:layout_margin="@dimen/dp5"/>
+        android:src="@drawable/ic_head_image"
+        android:layout_margin="@dimen/dp10"/>
     <TextView
         android:id="@+id/tv_contact_name"
         android:layout_width="wrap_content"

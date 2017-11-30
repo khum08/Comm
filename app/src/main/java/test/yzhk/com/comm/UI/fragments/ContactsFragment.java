@@ -60,6 +60,7 @@ public class ContactsFragment extends BaseFragment {
         tv_title.setText("通讯录");
 
         iv_add = (ImageView) mContactsView.findViewById(R.id.iv_add);
+        iv_add.setImageResource(R.drawable.ic_person_add);
         iv_add.setVisibility(View.VISIBLE);
         iv_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,18 +95,11 @@ public class ContactsFragment extends BaseFragment {
                                 public void run() {
                                     try {
                                         EMClient.getInstance().contactManager().addContact(email, desc);
-                                        Toastutil.showToast(mContext, "好友添加成功");
-                                        mContext.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mUsernames.add(0, email);
-                                                mContactsAdapter.notifyDataSetChanged();
-                                            }
-                                        });
+                                        Toastutil.showToast(mContext, "好友申请发送成功");
 
                                     } catch (HyphenateException e) {
                                         e.printStackTrace();
-                                        Toastutil.showToast(mContext, "好友添加失败");
+                                        Toastutil.showToast(mContext, "好友申请发送失败");
                                     }
                                 }
                             }.start();

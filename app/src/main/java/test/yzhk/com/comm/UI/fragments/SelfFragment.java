@@ -33,9 +33,6 @@ public class SelfFragment extends BaseFragment {
     public void initData() {
         //设置用户名
         TextView tv_username = (TextView) selfPage.findViewById(R.id.tv_username);
-//        MainActivity activity = (MainActivity) getActivity();
-//        String userName = activity.getUserName();
-//        tv_username.setText(userName);
 
         String currUsername = EMClient.getInstance().getCurrentUser();
         tv_username.setText(currUsername);

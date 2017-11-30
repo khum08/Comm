@@ -9,42 +9,62 @@
 
     <include layout="@layout/custom_actionbar"
         android:id="@+id/mytitle"/>
-    <ListView
-        android:id="@+id/lv_chat_content"
-        android:layout_alignBottom="@id/mytitle"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-    </ListView>
+        <ListView
+            android:id="@+id/lv_chat_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null"
+            android:stackFromBottom="true"
+            android:transcriptMode="alwaysScroll"
+            >
+
+        </ListView>
+    </FrameLayout>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:background="@color/white_"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp5"
         >
+
+        <ImageView
+            android:id="@+id/ib_voice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/dp8"
+            android:src="@drawable/ic_voice"
+            />
 
         <EditText
             android:id="@+id/et_chatcontent"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_weight="1"
             android:lines="1"
             />
 
         <Button
             android:id="@+id/bt_send"
-            android:layout_width="60dp"
+            android:layout_width="51dp"
             android:layout_height="35dp"
+            android:layout_marginLeft="@dimen/dp8"
+            android:layout_marginRight="@dimen/dp8"
             android:background="@drawable/selector_send"
-            android:text="@string/send"
             android:padding="@dimen/dp2"
+            android:text="@string/send"
             android:textColor="@color/selector_blue2white"
             android:textSize="@dimen/dp14"
-            android:layout_marginRight="@dimen/dp8"
-            android:layout_marginLeft="@dimen/dp8"
             />
     </LinearLayout>
 </LinearLayout>

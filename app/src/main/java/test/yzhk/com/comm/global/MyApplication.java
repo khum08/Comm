@@ -14,6 +14,7 @@ import com.hyphenate.chat.EMOptions;
 import java.util.Iterator;
 import java.util.List;
 
+
 /**
  * Created by 大傻春 on 2017/11/27.
  */
@@ -28,7 +29,10 @@ public class MyApplication extends Application {
         super.onCreate();
         mContext = this;
         initEasemob();
+
     }
+
+
 
 
     private void initEasemob() {
