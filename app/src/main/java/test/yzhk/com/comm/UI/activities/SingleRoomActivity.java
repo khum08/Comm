@@ -3,7 +3,10 @@ package test.yzhk.com.comm.UI.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -28,17 +31,21 @@ import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.dao.ConversationsDao;
 import test.yzhk.com.comm.utils.Toastutil;
+import test.yzhk.com.comm.utils.UriUtils;
 
 
-public class SingleRoomActivity extends AppCompatActivity {
+public class SingleRoomActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "SingleRoomActivity";
+    private static final int GET_PHOTO = 2;
+    private static final int OPEN_CAMERA = 3;
     private String mUserName;
     private ListView mLv_chat_content;
     private ChatAdapter mChatAdapter;
@@ -56,6 +63,7 @@ public class SingleRoomActivity extends AppCompatActivity {
     private LinearLayout mView_more_action;
     private Button mBt_send;
     private ImageView mIv_add_choice;
+    private static Uri tempUri;
 
 
     @Override
@@ -72,7 +80,10 @@ public class SingleRoomActivity extends AppCompatActivity {
         initTitle();
         initListView();
         startChat();
+        initMoreAction();
     }
+
+
 
     private void startChat() {
 
@@ -305,6 +316,7 @@ public class SingleRoomActivity extends AppCompatActivity {
     }
 
 
+
     public class ChatAdapter extends BaseAdapter {
 
         @Override
@@ -412,6 +424,103 @@ public class SingleRoomActivity extends AppCompatActivity {
         public ImageView iv_other;
     }
 
+    private TextView tv_photo;
+    private TextView tv_camera;
+    private TextView tv_video;
+    private TextView tv_location;
+    private TextView tv_call;
+    private TextView tv_facetime;
+    private TextView tv_file;
+    private TextView tv_money;
+
+    //设置点击侦听
+    private void initMoreAction() {
+        tv_photo = (TextView) findViewById(R.id.tv_photo);
+        tv_camera = (TextView) findViewById(R.id.tv_camera);
+        tv_video = (TextView) findViewById(R.id.tv_video);
+        tv_location = (TextView) findViewById(R.id.tv_location);
+        tv_call = (TextView) findViewById(R.id.tv_call);
+        tv_facetime = (TextView) findViewById(R.id.tv_facetime);
+        tv_file = (TextView) findViewById(R.id.tv_file);
+        tv_money = (TextView) findViewById(R.id.tv_money);
+
+        tv_photo.setOnClickListener(this);
+        tv_camera.setOnClickListener(this);
+        tv_video.setOnClickListener(this);
+        tv_location.setOnClickListener(this);
+        tv_call.setOnClickListener(this);
+        tv_facetime.setOnClickListener(this);
+        tv_file.setOnClickListener(this);
+        tv_money.setOnClickListener(this);
+    }
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.tv_photo:
+                Intent getPhoto = new Intent(Intent.ACTION_GET_CONTENT);
+                getPhoto.setType("image/*");
+                startActivityForResult(getPhoto,GET_PHOTO);
+                break;
+            case R.id.tv_camera:
+                Intent openCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                tempUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),"image.jpg"));
+                openCamera.putExtra(MediaStore.EXTRA_OUTPUT,tempUri);
+                startActivityForResult(openCamera,OPEN_CAMERA);
+                break;
+            case R.id.tv_video:
+                
+                break;
+            case R.id.tv_location:
+                showLocationDialog();
+                break;
+            case R.id.tv_call:
+                
+                break;
+            case R.id.tv_facetime:
+                
+                break;
+            case R.id.tv_file:
+                
+                break;
+            case R.id.tv_money:
+                
+                break;
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            switch (requestCode){
+                case GET_PHOTO:
+                    //加载图片
+                    EMMessage imageSendMessage = EMMessage.createImageSendMessage(UriUtils.getFileAbsolutePath(this,data.getData()), false, mUserName);
+//                    if (chatType == CHATTYPE_GROUP)
+//                       message.setChatType(ChatType.GroupChat);
+//                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
+                    conversationlist.add(imageSendMessage);
+                    mChatAdapter.notifyDataSetChanged();
+                    break;
+                case OPEN_CAMERA:
+                    EMMessage imageSendMessage2 = EMMessage.createImageSendMessage(UriUtils.getFileAbsolutePath(this,tempUri), false, mUserName);
+//                    if (chatType == CHATTYPE_GROUP)
+//                       message.setChatType(ChatType.GroupChat);
+//                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
+                    conversationlist.add(imageSendMessage2);
+                    mChatAdapter.notifyDataSetChanged();
+
+                    break;
+
+            }
+
+        }
+    }
+
+    private void showLocationDialog() {
+    }
 
 }
 
