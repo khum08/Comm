@@ -11,22 +11,16 @@
         android:id="@+id/mytitle"
         layout="@layout/custom_actionbar"/>
 
-    <FrameLayout
+
+    <ListView
+        android:id="@+id/lv_chat_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <ListView
-            android:id="@+id/lv_chat_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@null"
-            android:stackFromBottom="true"
-            android:transcriptMode="alwaysScroll"
-            >
-
-        </ListView>
-    </FrameLayout>
+        android:layout_weight="1"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        >
+    </ListView>
 
 
     <LinearLayout
@@ -79,6 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_weight="1"
+            android:imeOptions="actionSend"
             android:lines="1"
             />
 
@@ -104,4 +99,8 @@
             android:visibility="gone"
             />
     </LinearLayout>
+
+    <include
+        layout="@layout/view_more_action"
+        />
 </LinearLayout>

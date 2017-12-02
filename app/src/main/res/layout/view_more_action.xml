@@ -1,13 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
+              android:id="@+id/view_more_action"
+              android:visibility="gone"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="wrap_content">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/dp20"
+    android:paddingRight="@dimen/dp20"
+    android:orientation="horizontal"
+    android:layout_marginTop="@dimen/dp2"
+    >
+    <TextView
+        android:id="@+id/tv_photo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_photo_cyan_800_48dp"
+        android:gravity="center"
+        android:padding="@dimen/dp8"
+        android:text="图片"/>
+    <TextView
+        android:id="@+id/tv_camera"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_camera_purple_600_48dp"
+        android:gravity="center"
+        android:padding="@dimen/dp8"
+        android:text="拍照"/>
+    <TextView
+        android:id="@+id/tv_video"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_slow_motion_video_green_500_48dp"
+        android:gravity="center"
+        android:padding="@dimen/dp8"
+        android:text="视频"/>
+    <TextView
+        android:id="@+id/tv_location"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_location_on_pink_700_48dp"
+        android:gravity="center"
+        android:padding="@dimen/dp8"
+        android:text="位置"/>
+
+
+</LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/dp20"
+    android:paddingRight="@dimen/dp20"
+    android:orientation="horizontal"
+    android:layout_marginBottom="@dimen/dp2"
+    >
+    <TextView
+        android:id="@+id/tv_call"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_call_green_a700_48dp"
+        android:gravity="center"
+        android:padding="@dimen/dp8"
+        android:text="语音电话"/>
+    <TextView
+        android:id="@+id/tv_facetime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_videocam_indigo_900_48dp"
+        android:gravity="center"
+        android:padding="@dimen/dp8"
+        android:text="视频电话"/>
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_file"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:drawableTop="@drawable/ic_photo_cyan_800_48dp"
-        android:text="图片"/>
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_folder_open_blue_grey_800_48dp"
+        android:gravity="center"
+        android:padding="@dimen/dp8"
+        android:text="文件"/>
+    <TextView
+        android:id="@+id/tv_money"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_attach_money_red_900_48dp"
+        android:gravity="center"
+        android:padding="@dimen/dp8"
+        android:text="红包"/>
+
+</LinearLayout>
 </LinearLayout>

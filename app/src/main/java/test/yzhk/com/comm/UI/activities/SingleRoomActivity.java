@@ -2,9 +2,8 @@ package test.yzhk.com.comm.UI.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -17,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -24,51 +24,44 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import test.yzhk.com.comm.R;
-import test.yzhk.com.comm.domain.ConversationBean;
-import test.yzhk.com.comm.engine.ParseMessages;
+import test.yzhk.com.comm.dao.ConversationsDao;
+import test.yzhk.com.comm.utils.Toastutil;
 
 
 public class SingleRoomActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = "SingleRoomActivity";
+    private static final String TAG = "SingleRoomActivity";
     private String mUserName;
     private ListView mLv_chat_content;
     private ChatAdapter mChatAdapter;
-    private List<EMMessage> mMessages;
+
     private String mMe;
 
 
-    public ArrayList<ConversationBean> mConvationList = new ArrayList<ConversationBean>();
+    public List<EMMessage> conversationlist = new ArrayList<>();
     private ImageView mIv_add;
     private EditText mEt_chatcontent;
 
-    private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 0:
-                    mChatAdapter = new ChatAdapter();
-                    mLv_chat_content.setAdapter(mChatAdapter);
-            }
-        }
-    };
     private ImageView mIv_voice;
     private Button mBt_talk;
     private ImageView mIv_keyboard;
+    private LinearLayout mView_more_action;
+    private Button mBt_send;
+    private ImageView mIv_add_choice;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_room);
-        Log.e(LOG_TAG, "进入了聊天室");
         //权限申请
         initView();
 
@@ -82,11 +75,35 @@ public class SingleRoomActivity extends AppCompatActivity {
     }
 
     private void startChat() {
-        //监听输入框 弹出发送按钮
-        mEt_chatcontent = (EditText) findViewById(R.id.et_chatcontent);
-        final Button bt_send = (Button) findViewById(R.id.bt_send);
-        final ImageView iv_add_choice = (ImageView) findViewById(R.id.iv_add_choice);
 
+        mEt_chatcontent = (EditText) findViewById(R.id.et_chatcontent);
+        mBt_send = (Button) findViewById(R.id.bt_send);
+        mIv_add_choice = (ImageView) findViewById(R.id.iv_add_choice);
+        mView_more_action = (LinearLayout) findViewById(R.id.view_more_action);
+
+        //弹出更多操作界面
+        mIv_add_choice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controlKeyboard();
+            }
+        });
+        mEt_chatcontent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        mEt_chatcontent.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mView_more_action.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        //监听输入框 弹出发送按钮
         mEt_chatcontent.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -94,23 +111,22 @@ public class SingleRoomActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.toString().length()>0){
-                    bt_send.setVisibility(View.VISIBLE);
-                    iv_add_choice.setVisibility(View.GONE);
-                }else{
-                    bt_send.setVisibility(View.GONE);
-                    iv_add_choice.setVisibility(View.VISIBLE);
+                if (s.toString().length() > 0) {
+                    mBt_send.setVisibility(View.VISIBLE);
+                    mIv_add_choice.setVisibility(View.GONE);
+                } else {
+                    mBt_send.setVisibility(View.GONE);
+                    mIv_add_choice.setVisibility(View.VISIBLE);
                 }
             }
         });
 
         //发送消息
-        bt_send.setOnClickListener(new View.OnClickListener() {
+        mBt_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String text = mEt_chatcontent.getText().toString().trim();
@@ -118,22 +134,13 @@ public class SingleRoomActivity extends AppCompatActivity {
 
                     mEt_chatcontent.setText("");
 
-                    //创建一条文本消息，text为消息文字内容，mUserName为对方用户或者群聊的id，
+                    //创建一条文本消息，text为消息文字内容，mUserName为对方用户或者群聊的id，异步发送消息
                     EMMessage message = EMMessage.createTxtSendMessage(text, mUserName);
-                    //异步发送消息
                     EMClient.getInstance().chatManager().sendMessage(message);
 
                     //集合变化
-                    if (mConvationList != null) {
-                        ConversationBean bean = new ConversationBean();
-                        bean.texBody = text;
-                        bean.sender = mMe;
-                        bean.type = EMMessage.Type.TXT;
-                        mConvationList.add(bean);
-                        mChatAdapter.notifyDataSetChanged();
-                    } else {
-                        Log.e(LOG_TAG, "mConvationList位null");
-                    }
+                    conversationlist.add(message);
+                    mChatAdapter.notifyDataSetChanged();
 
                 }
             }
@@ -156,7 +163,8 @@ public class SingleRoomActivity extends AppCompatActivity {
 
                 mBt_talk.setVisibility(View.VISIBLE);
                 mIv_keyboard.setVisibility(View.VISIBLE);
-                showKeyboard();
+                controlKeyboard();
+                mView_more_action.setVisibility(View.GONE);
 
             }
         });
@@ -168,33 +176,53 @@ public class SingleRoomActivity extends AppCompatActivity {
 
                 mBt_talk.setVisibility(View.GONE);
                 mIv_keyboard.setVisibility(View.GONE);
-                showKeyboard();
+                controlKeyboard();
+                mView_more_action.setVisibility(View.GONE);
             }
         });
 
     }
 
-    //键盘的
-    public void showKeyboard(){
-        mEt_chatcontent.requestFocus();//输入框获取焦点
+    //控制键盘
+    public void controlKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//开启或者关闭软键盘
-        imm.showSoftInput(mEt_chatcontent,InputMethodManager.SHOW_FORCED);//弹出软键盘时，焦点定位在输入框中
+        if (isSoftShowing()) {
+            mView_more_action.setVisibility(View.VISIBLE);
+        } else {
+            mView_more_action.setVisibility(View.GONE);
+        }
     }
 
+    //判断键盘是否显示
+    private boolean isSoftShowing() {
+        //获取当前屏幕内容的高度
+        int screenHeight = getWindow().getDecorView().getHeight();
+        //获取View可见区域的bottom
+        Rect rect = new Rect();
+        getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
+
+        return screenHeight - rect.bottom != 0;
+    }
+
+    //消息接收监听器
     public EMMessageListener msgListener = new EMMessageListener() {
 
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
             //收到消息
-            ArrayList<ConversationBean> moreList = ParseMessages.parse(messages);
-            mConvationList.addAll(moreList);
+            Log.e(TAG,"收到了新消息 onMessageReceived");
+            conversationlist.addAll(messages);
             mChatAdapter.notifyDataSetChanged();
+            mChatAdapter.notifyDataSetInvalidated();
         }
 
         @Override
         public void onCmdMessageReceived(List<EMMessage> messages) {
             //收到透传消息
+            Log.e(TAG,"收到了新消息 onCmdMessageReceived");
+            conversationlist.addAll(messages);
+            mChatAdapter.notifyDataSetChanged();
         }
 
         @Override
@@ -205,6 +233,7 @@ public class SingleRoomActivity extends AppCompatActivity {
         @Override
         public void onMessageDelivered(List<EMMessage> message) {
             //收到已送达回执
+            Toastutil.showToast(SingleRoomActivity.this, "消息已送达");
         }
 
         @Override
@@ -218,39 +247,33 @@ public class SingleRoomActivity extends AppCompatActivity {
         }
     };
 
+    //销毁监听器
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
+    }
 
-    public EMConversation mConversation;
 
     public void initListView() {
 
         mLv_chat_content = (ListView) findViewById(R.id.lv_chat_content);
         initConversation();
-
         mChatAdapter = new ChatAdapter();
         mLv_chat_content.setAdapter(mChatAdapter);
     }
 
     private void initConversation() {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                mConversation = EMClient.getInstance().chatManager().getConversation(mUserName, null, true);
-                mConversation.markAllMessagesAsRead();
-
-                if (mConversation != null) {
-                    mMessages = mConversation.getAllMessages();
-                    //SDK初始化加载的聊天记录为20条，到顶时需要去DB里获取更多
-                    //获取startMsgId之前的pagesize条消息，此方法获取的messages SDK会自动存入到此会话中，APP中无需再次把获取到的messages添加到会话中
-                    //List<EMMessage> messages = conversation.loadMoreMsgFromDB(startMsgId, pagesize);
-                    mConvationList = ParseMessages.parse(mMessages);
-
-                }
-                mHandler.sendEmptyMessage(0);
-            }
-        }.start();
+        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName);
+        if (newConversationlist != null) {
+            conversationlist = newConversationlist;
+        }
+        mChatAdapter = new ChatAdapter();
+        mLv_chat_content.setAdapter(mChatAdapter);
     }
 
+
+    //初始化titlebar
     private void initTitle() {
         Intent data = getIntent();
         mUserName = data.getStringExtra("userName");
@@ -281,21 +304,16 @@ public class SingleRoomActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
-    }
 
     public class ChatAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return mConvationList.size();
+            return conversationlist.size();
         }
 
-        public ConversationBean getItem(int position) {
-            return mConvationList.get(position);
+        public EMMessage getItem(int position) {
+            return conversationlist.get(position);
         }
 
         @Override
@@ -318,53 +336,70 @@ public class SingleRoomActivity extends AppCompatActivity {
                 viewHold.tv_other = (TextView) convertView.findViewById(R.id.tv_other);
                 viewHold.iv_other = (ImageView) convertView.findViewById(R.id.iv_ohter);
                 convertView.setTag(viewHold);
-
             } else {
                 viewHold = (ViewHold) convertView.getTag();
             }
 
-            ConversationBean message = getItem(position);
+            EMMessage message = getItem(position);
 
-            if (message.sender.equalsIgnoreCase(mMe)) {
+            if (message.getFrom().equalsIgnoreCase(mMe)) {
 
-                if(message.type!=null) {
-                    if (message.type.equals(EMMessage.Type.TXT)) {
+                if (message.getType() != null) {
+                    if (message.getType().equals(EMMessage.Type.TXT)) {
                         viewHold.tv_me.setVisibility(View.VISIBLE);
-                        viewHold.tv_me.setText(message.texBody);
+                        EMTextMessageBody body = (EMTextMessageBody) message.getBody();
+                        viewHold.tv_me.setText(body.getMessage());
 
-                    } else if (message.type.equals(EMMessage.Type.IMAGE)) {
+                    } else if (message.getType().equals(EMMessage.Type.IMAGE)) {
                         viewHold.iv_me.setVisibility(View.VISIBLE);
-                        Glide.with(SingleRoomActivity.this).load(message.imageUrl).into(viewHold.iv_me);
+                        EMImageMessageBody body = (EMImageMessageBody) message.getBody();
+                        Glide.with(SingleRoomActivity.this).load(body.getLocalUrl()).into(viewHold.iv_me);
 
-                    } else if (message.type.equals(EMMessage.Type.VOICE)) {
+                    } else if (message.getType().equals(EMMessage.Type.VOICE)) {
                         viewHold.iv_me.setVisibility(View.VISIBLE);
                     }
                     viewHold.rl_root_me.setVisibility(View.VISIBLE);
                 }
-
             } else {
 
-                if(message.type!=null){
-                    if (message.type.equals(EMMessage.Type.TXT)) {
+                if (message.getType() != null) {
+                    if (message.getType().equals(EMMessage.Type.TXT)) {
                         viewHold.tv_other.setVisibility(View.VISIBLE);
-                        viewHold.tv_other.setText(message.texBody);
-                    } else if (message.type.equals(EMMessage.Type.IMAGE)) {
+                        EMTextMessageBody body = (EMTextMessageBody) message.getBody();
+                        viewHold.tv_other.setText(body.getMessage());
+                    } else if (message.getType().equals(EMMessage.Type.IMAGE)) {
                         viewHold.iv_other.setVisibility(View.VISIBLE);
-                        Glide.with(SingleRoomActivity.this).load(message.imageUrl).into(viewHold.iv_other);
+                        EMImageMessageBody body = (EMImageMessageBody) message.getBody();
+                        Glide.with(SingleRoomActivity.this).load(body.getLocalUrl()).into(viewHold.iv_other);
 
-                    } else if (message.type.equals(EMMessage.Type.VOICE)) {
+                    } else if (message.getType().equals(EMMessage.Type.VOICE)) {
                         viewHold.iv_other.setVisibility(View.VISIBLE);
                     }
                     viewHold.rl_root_other.setVisibility(View.VISIBLE);
                 }
 
             }
-
             return convertView;
         }
 
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+            scrollMyListViewToBottom();
+        }
 
     }
+
+    //使listview显示的一直是最后一个item
+    private void scrollMyListViewToBottom() {
+        mLv_chat_content.post(new Runnable() {
+            @Override
+            public void run() {
+                mLv_chat_content.setSelection(mLv_chat_content.getCount() - 1);
+            }
+        });
+    }
+
 
     static class ViewHold {
 
@@ -375,7 +410,6 @@ public class SingleRoomActivity extends AppCompatActivity {
         public RelativeLayout rl_root_other;
         public TextView tv_other;
         public ImageView iv_other;
-
     }
 
 

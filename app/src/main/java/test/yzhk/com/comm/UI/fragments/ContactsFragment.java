@@ -147,11 +147,25 @@ public class ContactsFragment extends BaseFragment {
                 String friName = mContactsAdapter.getItem(position);
                 Intent intent = new Intent(mContext,FriDetailActivity.class);
                 intent.putExtra("friName",friName);
-                startActivity(intent);
+                startActivityForResult(intent,0);
 
             }
         });
 
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==0){
+            if(requestCode==2){
+                if(mContactsAdapter!=null){
+                    String friName = data.getStringExtra("friName");
+                    mUsernames.remove(friName);
+                    mContactsAdapter.notifyDataSetChanged();
+                }
+            }
+        }
 
     }
 

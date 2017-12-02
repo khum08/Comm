@@ -1,9 +1,9 @@
 package test.yzhk.com.comm.UI.fragments;
 
-import android.os.Handler;
-import android.os.Message;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import test.yzhk.com.comm.R;
+import test.yzhk.com.comm.UI.activities.SingleRoomActivity;
 import test.yzhk.com.comm.dao.ConversationsDao;
 import test.yzhk.com.comm.engine.ParseConversations;
 
@@ -27,23 +28,11 @@ import test.yzhk.com.comm.engine.ParseConversations;
 public class ChatFragment extends BaseFragment {
 
     public View mChatView;
-    public Map<String, EMMessage> mMap;
+    public Map<String, EMConversation> mMap;
     public ArrayList<String> mKeyList;
+    private static final String TAG = "ChatFragment";
 
-    public Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 0:
-                    ConversationAdapter mAdapter = new ConversationAdapter();
-                    ListView lv_chat = (ListView) mChatView.findViewById(R.id.lv_chat);
-                    lv_chat.setAdapter(mAdapter);
-                    break;
-            }
-
-        }
-    };
+    private ListView mLv_chat;
 
     @Override
     public View initView() {
@@ -52,28 +41,36 @@ public class ChatFragment extends BaseFragment {
         tv_title.setText(R.string.app_name);
         ImageView iv_add = (ImageView) mChatView.findViewById(R.id.iv_add);
         iv_add.setVisibility(View.VISIBLE);
+
         return mChatView;
     }
 
     @Override
     public void initData() {
-        new Thread() {
-
-            @Override
-            public void run() {
-                super.run();
-                Map<String, EMConversation> allConversations = ConversationsDao.getAllConversations();
-                mMap = ParseConversations.parse(allConversations);
-                mKeyList = new ArrayList<>();
-                if (mMap != null) {
-                    for (Map.Entry<String, EMMessage> entry : mMap.entrySet()) {
-                        mKeyList.add(entry.getKey());
-                    }
-                }
-                mHandler.sendEmptyMessage(0);
-
+        mLv_chat = (ListView) mChatView.findViewById(R.id.lv_chat);
+        Map<String, EMConversation> allConversations = ConversationsDao.getAllConversations();
+        mMap = ParseConversations.parse(allConversations);
+        mKeyList = new ArrayList<>();
+        if (mMap != null) {
+            for (Map.Entry<String, EMConversation> entry : mMap.entrySet()) {
+                mKeyList.add(entry.getKey());
             }
-        }.start();
+        }
+//        for (int i = 0; i < mKeyList.size(); i++) {
+//            String s = mKeyList.get(i);
+//            Log.e(TAG, s);
+//        }
+        ConversationAdapter mAdapter = new ConversationAdapter();
+
+        mLv_chat.setAdapter(mAdapter);
+        mLv_chat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(mContext, SingleRoomActivity.class);
+                intent.putExtra("userName",mKeyList.get(position));
+                startActivity(intent);
+            }
+        });
 
 
     }
@@ -82,10 +79,7 @@ public class ChatFragment extends BaseFragment {
 
         @Override
         public int getCount() {
-            if (mKeyList != null) {
-                return mKeyList.size();
-            }
-            return 0;
+            return mKeyList.size();
         }
 
         @Override
@@ -112,20 +106,21 @@ public class ChatFragment extends BaseFragment {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            if(mMap!=null){
+            if (mMap != null) {
                 String conversationId = getItem(position);
                 holder.tv_conv_name.setText(conversationId);
 
-                EMMessage emMessage = mMap.get(conversationId);
-                if (emMessage.getType() == EMMessage.Type.TXT) {
-                    EMTextMessageBody body = (EMTextMessageBody) emMessage.getBody();
+                EMConversation conversation = mMap.get(conversationId);
+                EMMessage lastMessage = conversation.getLastMessage();
+                if (lastMessage.getType() == EMMessage.Type.TXT) {
+                    EMTextMessageBody body = (EMTextMessageBody) lastMessage.getBody();
                     String message = body.getMessage();
                     holder.tv_conv_content.setText(message);
-                }else if(emMessage.getType() == EMMessage.Type.VOICE){
+                } else if (lastMessage.getType() == EMMessage.Type.VOICE) {
                     holder.tv_conv_content.setText("语音");
-                }else if(emMessage.getType() == EMMessage.Type.IMAGE){
+                } else if (lastMessage.getType() == EMMessage.Type.IMAGE) {
                     holder.tv_conv_content.setText("图片");
-                }else {
+                } else {
                     holder.tv_conv_content.setText("");
                 }
             }

@@ -200,7 +200,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
                             // 加载所有会话到内存
                             EMClient.getInstance().chatManager().loadAllConversations();
                             // 加载所有群组到内存，如果使用了群组的话
@@ -208,7 +207,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                             // 登录成功跳转界面
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("userName",mEmail);
                             startActivity(intent);
                             finish();
                         }

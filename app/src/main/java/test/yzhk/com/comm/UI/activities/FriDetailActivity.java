@@ -81,7 +81,10 @@ public class FriDetailActivity extends AppCompatActivity {
                                     try {
                                         EMClient.getInstance().contactManager().deleteContact(mFriName);
                                         Toastutil.showToast(FriDetailActivity.this,"删除好友成功");
+                                        Intent intent = new Intent().putExtra("friName", mFriName);
+                                        FriDetailActivity.this.setResult(2,intent);
                                         FriDetailActivity.this.finish();
+
                                     } catch (HyphenateException e) {
                                         e.printStackTrace();
                                     }
