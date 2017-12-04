@@ -1,23 +1,24 @@
 package test.yzhk.com.comm.UI.fragments;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.flipboard.bottomsheet.BottomSheetLayout;
+import com.flipboard.bottomsheet.commons.MenuSheetView;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.exceptions.HyphenateException;
 
@@ -75,8 +76,7 @@ public class ContactsFragment extends BaseFragment {
         iv_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showBottomDialog();
-//                showAddDialog();
+                showBottomSheet();
             }
         });
 
@@ -84,15 +84,39 @@ public class ContactsFragment extends BaseFragment {
         return mContactsView;
     }
 
-    private void showBottomDialog() {
-        View view = View.inflate(mContext, R.layout.view_popupwindow,null);
-        Dialog dialog = new Dialog(mContext, R.style.Theme_AppCompat_Dialog);
-        dialog.setContentView(view);
-        Window window = dialog.getWindow();
-        window.setGravity(Gravity.BOTTOM);
-        dialog.show();
+    private void showBottomSheet() {
+        final BottomSheetLayout bottomSheetLayout = mContext.mRootView ;
+
+        MenuSheetView menuSheetView =
+                new MenuSheetView(mContext, MenuSheetView.MenuType.LIST, "操作...", new MenuSheetView.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.tv_add_fri:
+                                showAddDialog();
+                                break;
+                            case R.id.tv_blacknum:
+                                showBlackNumber();
+                                break;
+                            case R.id.tv_nothing:
+                                break;
+                        }
+                        Toast.makeText(mContext, item.getTitle(), Toast.LENGTH_SHORT).show();
+                        if (bottomSheetLayout.isSheetShowing()) {
+                            bottomSheetLayout.dismissSheet();
+                        }
+                        return true;
+                    }
+                });
+        menuSheetView.inflateMenu(R.menu.bottomsheet_contacts);
+        bottomSheetLayout.showWithSheetView(menuSheetView);
 
 
+    }
+
+    private void showBlackNumber() {
+        ToastUtil.showToast(mContext,"即将进入黑名单activity");
+        //// TODO: 2017/12/4  
     }
 
     private void showAddDialog() {

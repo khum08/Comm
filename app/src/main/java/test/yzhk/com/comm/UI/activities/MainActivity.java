@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.flipboard.bottomsheet.BottomSheetLayout;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMContactListener;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private BaseFragment mChatFragment;
     private BaseFragment mMapFragment;
     private BaseFragment mSelfFragment;
+    public BottomSheetLayout mRootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
+        mRootView = (BottomSheetLayout) findViewById(R.id.container);
 
 
         initView();
