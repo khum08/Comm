@@ -4,11 +4,19 @@
               android:layout_height="match_parent"
     android:orientation="vertical">
     <include layout="@layout/custom_actionbar"/>
+
+    <TextView
+        android:id="@+id/tv_isloading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="正在加载..."/>
+
     <ListView
         android:id="@+id/lv_contact"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        android:visibility="gone">
     </ListView>
 
 </LinearLayout>

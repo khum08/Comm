@@ -36,6 +36,7 @@ public class ContactsFragment extends BaseFragment {
 
     private List<String> mUsernames;
     private TextView tv_title;
+    private TextView tv_isloading;
     private ImageView iv_add;
     private contactsAdapter mContactsAdapter;
 
@@ -43,6 +44,9 @@ public class ContactsFragment extends BaseFragment {
 
         @Override
         public void handleMessage(Message msg) {
+            tv_isloading.setVisibility(View.GONE);
+            mLv_contact.setVisibility(View.VISIBLE);
+
             mContactsAdapter = new contactsAdapter();
             mLv_contact.setAdapter(mContactsAdapter);
 
@@ -58,6 +62,9 @@ public class ContactsFragment extends BaseFragment {
         mLv_contact = (ListView) mContactsView.findViewById(R.id.lv_contact);
         tv_title = (TextView) mContactsView.findViewById(R.id.tv_title);
         tv_title.setText("通讯录");
+
+
+        tv_isloading = (TextView) mContactsView.findViewById(R.id.tv_isloading);
 
         iv_add = (ImageView) mContactsView.findViewById(R.id.iv_add);
         iv_add.setImageResource(R.drawable.ic_person_add);

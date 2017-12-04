@@ -68,11 +68,17 @@ public class ChatFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(mContext, SingleRoomActivity.class);
-                intent.putExtra("userName",mKeyList.get(position));
+                String conversationId = mKeyList.get(position);
+
+                intent.putExtra("userName",conversationId);
                 startActivity(intent);
+
+                //未读消息数目清零
+                EMConversation conversation = mMap.get(conversationId);
+                conversation.markAllMessagesAsRead();
+
             }
         });
-
 
     }
 
@@ -102,6 +108,7 @@ public class ChatFragment extends BaseFragment {
                 holder.tv_conv_name = (TextView) convertView.findViewById(R.id.tv_conv_name);
                 holder.tv_conv_content = (TextView) convertView.findViewById(R.id.tv_conv_content);
                 holder.tv_time = (TextView) convertView.findViewById(R.id.tv_time);
+                holder.tv_unread = (TextView) convertView.findViewById(R.id.tv_unread);
                 convertView.setTag(holder);
 
             } else {
@@ -112,8 +119,19 @@ public class ChatFragment extends BaseFragment {
                 String conversationId = getItem(position);
                 holder.tv_conv_name.setText(conversationId);
 
-
                 EMConversation conversation = mMap.get(conversationId);
+                //设置未读
+                int unreadMsgCount = conversation.getUnreadMsgCount();
+                if(unreadMsgCount>0){
+                    if(unreadMsgCount>99){
+                        holder.tv_unread.setText("99");
+                    }else{
+                        holder.tv_unread.setText(unreadMsgCount+"");
+                    }
+                }else{
+                    holder.tv_unread.setVisibility(View.INVISIBLE);
+                }
+                //设置时间
                 EMMessage lastMessage = conversation.getLastMessage();
                 long msgTime = lastMessage.getMsgTime();
                 long interval = msgTime - System.currentTimeMillis();
@@ -122,7 +140,6 @@ public class ChatFragment extends BaseFragment {
                 }else{
                     holder.tv_time.setText(DateUtil.formate("HH:mm",msgTime));
                 }
-
 
                 if (lastMessage.getType() == EMMessage.Type.TXT) {
                     EMTextMessageBody body = (EMTextMessageBody) lastMessage.getBody();
@@ -145,6 +162,7 @@ public class ChatFragment extends BaseFragment {
         public TextView tv_conv_name;
         public TextView tv_conv_content;
         public TextView tv_time;
+        public TextView tv_unread;
     }
 
 }

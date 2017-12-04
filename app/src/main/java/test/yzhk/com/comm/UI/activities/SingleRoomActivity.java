@@ -291,6 +291,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName);
         if (newConversationlist != null) {
             conversationlist = newConversationlist;
+            Log.e(TAG,"conversationlist的size为"+conversationlist.size());
         }
         mChatAdapter = new ChatAdapter();
         mLv_chat_content.setAdapter(mChatAdapter);

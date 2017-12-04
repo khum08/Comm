@@ -23,13 +23,14 @@ public class ConversationsDao {
 
     public static List<EMMessage> getConversation(Context context, String username) {
 
-        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username, null, true);
+        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
         if (conversation != null) {
             conversation.markAllMessagesAsRead();
+
             List<EMMessage> mMessages = conversation.getAllMessages();
+            mMessages = conversation.loadMoreMsgFromDB(mMessages.get(mMessages.size()-1).getMsgId(),10);
             return mMessages;
         }
-
         return null;
     }
 }
