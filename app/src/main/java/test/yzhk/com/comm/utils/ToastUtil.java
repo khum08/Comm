@@ -7,7 +7,7 @@ import android.widget.Toast;
  * Created by 大傻春 on 2017/11/28.
  */
 
-public class Toastutil {
+public class ToastUtil {
 
     /**
      * 主线程和子线程都可显示toast

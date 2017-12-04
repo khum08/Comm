@@ -20,6 +20,7 @@ import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.SingleRoomActivity;
 import test.yzhk.com.comm.dao.ConversationsDao;
 import test.yzhk.com.comm.engine.ParseConversations;
+import test.yzhk.com.comm.utils.DateUtil;
 
 /**
  * Created by 大傻春 on 2017/11/24.
@@ -100,6 +101,7 @@ public class ChatFragment extends BaseFragment {
                 convertView = View.inflate(mContext, R.layout.list_item_conversation, null);
                 holder.tv_conv_name = (TextView) convertView.findViewById(R.id.tv_conv_name);
                 holder.tv_conv_content = (TextView) convertView.findViewById(R.id.tv_conv_content);
+                holder.tv_time = (TextView) convertView.findViewById(R.id.tv_time);
                 convertView.setTag(holder);
 
             } else {
@@ -110,8 +112,18 @@ public class ChatFragment extends BaseFragment {
                 String conversationId = getItem(position);
                 holder.tv_conv_name.setText(conversationId);
 
+
                 EMConversation conversation = mMap.get(conversationId);
                 EMMessage lastMessage = conversation.getLastMessage();
+                long msgTime = lastMessage.getMsgTime();
+                long interval = msgTime - System.currentTimeMillis();
+                if(interval>86400){
+                    holder.tv_time.setText(DateUtil.formate("E",msgTime));
+                }else{
+                    holder.tv_time.setText(DateUtil.formate("HH:mm",msgTime));
+                }
+
+
                 if (lastMessage.getType() == EMMessage.Type.TXT) {
                     EMTextMessageBody body = (EMTextMessageBody) lastMessage.getBody();
                     String message = body.getMessage();
@@ -132,6 +144,7 @@ public class ChatFragment extends BaseFragment {
     static class ViewHolder {
         public TextView tv_conv_name;
         public TextView tv_conv_content;
+        public TextView tv_time;
     }
 
 }

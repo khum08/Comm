@@ -10,7 +10,7 @@ import com.hyphenate.chat.EMClient;
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.LoginActivity;
 import test.yzhk.com.comm.UI.view.SettingItemView;
-import test.yzhk.com.comm.utils.Toastutil;
+import test.yzhk.com.comm.utils.ToastUtil;
 
 /**
  * Created by 大傻春 on 2017/11/24.
@@ -66,6 +66,7 @@ public class SelfFragment extends BaseFragment {
                     public void onSuccess() {
                         startActivity(new Intent(mContext,LoginActivity.class));
                         mContext.finish();
+                        ToastUtil.showToast(mContext,"退出成功，请重新登录");
                     }
 
                     @Override
@@ -73,7 +74,7 @@ public class SelfFragment extends BaseFragment {
                     }
                     @Override
                     public void onError(int code, String message) {
-                        Toastutil.showToast(mContext,"退出失败");
+                        ToastUtil.showToast(mContext,"退出失败");
                     }
                 });
             }

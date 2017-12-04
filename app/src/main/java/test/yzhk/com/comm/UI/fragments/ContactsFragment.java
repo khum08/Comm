@@ -22,7 +22,7 @@ import java.util.List;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.FriDetailActivity;
-import test.yzhk.com.comm.utils.Toastutil;
+import test.yzhk.com.comm.utils.ToastUtil;
 
 /**
  * Created by 大傻春 on 2017/11/27.
@@ -95,24 +95,24 @@ public class ContactsFragment extends BaseFragment {
                                 public void run() {
                                     try {
                                         EMClient.getInstance().contactManager().addContact(email, desc);
-                                        Toastutil.showToast(mContext, "好友申请发送成功");
+                                        ToastUtil.showToast(mContext, "好友申请发送成功");
 
                                     } catch (HyphenateException e) {
                                         e.printStackTrace();
-                                        Toastutil.showToast(mContext, "好友申请发送失败");
+                                        ToastUtil.showToast(mContext, "好友申请发送失败");
                                     }
                                 }
                             }.start();
                         } else {
-                            Toastutil.showToast(mContext, "不能添加自己为好友哦");
+                            ToastUtil.showToast(mContext, "不能添加自己为好友哦");
                         }
 
                     } else {
-                        Toastutil.showToast(mContext, "用户名必须大于三位哦");
+                        ToastUtil.showToast(mContext, "用户名必须大于三位哦");
                     }
 
                 } else {
-                    Toastutil.showToast(mContext, "输入框不能为空哦");
+                    ToastUtil.showToast(mContext, "输入框不能为空哦");
                 }
 
                 dialog.dismiss();
@@ -132,7 +132,7 @@ public class ContactsFragment extends BaseFragment {
                 try {
                     mUsernames = EMClient.getInstance().contactManager().getAllContactsFromServer();
                     if (mUsernames != null && mUsernames.size() == 0) {
-                        Toastutil.showToast(mContext, "暂时还没有好友哦");
+                        ToastUtil.showToast(mContext, "暂时还没有好友哦");
                     }
                     mHandler.sendEmptyMessage(0);
                 } catch (HyphenateException e) {

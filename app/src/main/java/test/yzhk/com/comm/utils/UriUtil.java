@@ -13,7 +13,7 @@ import android.provider.MediaStore;
  * Created by 大傻春 on 2017/12/2.
  */
 
-public class UriUtils {
+public class UriUtil {
     /**
      * 根据Uri获取文件的绝对路径，解决Android4.4以上版本Uri转换
      *

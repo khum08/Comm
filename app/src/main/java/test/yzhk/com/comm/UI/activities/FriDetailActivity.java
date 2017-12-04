@@ -13,7 +13,7 @@ import com.hyphenate.exceptions.HyphenateException;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.view.SettingItemView;
-import test.yzhk.com.comm.utils.Toastutil;
+import test.yzhk.com.comm.utils.ToastUtil;
 
 public class FriDetailActivity extends AppCompatActivity {
 
@@ -80,7 +80,7 @@ public class FriDetailActivity extends AppCompatActivity {
                                 public void run() {
                                     try {
                                         EMClient.getInstance().contactManager().deleteContact(mFriName);
-                                        Toastutil.showToast(FriDetailActivity.this,"删除好友成功");
+                                        ToastUtil.showToast(FriDetailActivity.this,"删除好友成功");
                                         Intent intent = new Intent().putExtra("friName", mFriName);
                                         FriDetailActivity.this.setResult(2,intent);
                                         FriDetailActivity.this.finish();

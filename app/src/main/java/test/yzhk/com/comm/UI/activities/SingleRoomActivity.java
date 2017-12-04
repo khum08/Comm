@@ -6,6 +6,8 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -37,8 +39,8 @@ import java.util.List;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.dao.ConversationsDao;
-import test.yzhk.com.comm.utils.Toastutil;
-import test.yzhk.com.comm.utils.UriUtils;
+import test.yzhk.com.comm.utils.ToastUtil;
+import test.yzhk.com.comm.utils.UriUtil;
 
 
 public class SingleRoomActivity extends AppCompatActivity implements View.OnClickListener{
@@ -64,6 +66,17 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
     private Button mBt_send;
     private ImageView mIv_add_choice;
     private static Uri tempUri;
+    public Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 0:
+                    mChatAdapter.notifyDataSetChanged();
+                    break;
+            }
+        }
+    };
 
 
     @Override
@@ -224,8 +237,8 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
             //收到消息
             Log.e(TAG,"收到了新消息 onMessageReceived");
             conversationlist.addAll(messages);
-            mChatAdapter.notifyDataSetChanged();
-            mChatAdapter.notifyDataSetInvalidated();
+            mHandler.sendEmptyMessage(0);
+
         }
 
         @Override
@@ -244,7 +257,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         @Override
         public void onMessageDelivered(List<EMMessage> message) {
             //收到已送达回执
-            Toastutil.showToast(SingleRoomActivity.this, "消息已送达");
+            ToastUtil.showToast(SingleRoomActivity.this, "消息已送达");
         }
 
         @Override
@@ -497,7 +510,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
             switch (requestCode){
                 case GET_PHOTO:
                     //加载图片
-                    EMMessage imageSendMessage = EMMessage.createImageSendMessage(UriUtils.getFileAbsolutePath(this,data.getData()), false, mUserName);
+                    EMMessage imageSendMessage = EMMessage.createImageSendMessage(UriUtil.getFileAbsolutePath(this,data.getData()), false, mUserName);
 //                    if (chatType == CHATTYPE_GROUP)
 //                       message.setChatType(ChatType.GroupChat);
 //                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
@@ -505,7 +518,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
                     mChatAdapter.notifyDataSetChanged();
                     break;
                 case OPEN_CAMERA:
-                    EMMessage imageSendMessage2 = EMMessage.createImageSendMessage(UriUtils.getFileAbsolutePath(this,tempUri), false, mUserName);
+                    EMMessage imageSendMessage2 = EMMessage.createImageSendMessage(UriUtil.getFileAbsolutePath(this,tempUri), false, mUserName);
 //                    if (chatType == CHATTYPE_GROUP)
 //                       message.setChatType(ChatType.GroupChat);
 //                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
