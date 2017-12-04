@@ -21,16 +21,24 @@ public class ConversationsDao {
         return allConversations;
     }
 
-    public static List<EMMessage> getConversation(Context context, String username) {
+    public static List<EMMessage> getConversation(Context context, String username,int size) {
 
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
         if (conversation != null) {
             conversation.markAllMessagesAsRead();
 
             List<EMMessage> mMessages = conversation.getAllMessages();
-            mMessages = conversation.loadMoreMsgFromDB(mMessages.get(mMessages.size()-1).getMsgId(),10);
+            if(size==-1){
+                mMessages = conversation.loadMoreMsgFromDB(mMessages.get(mMessages.size()-1).getMsgId(),mMessages.size());
+            }
+            mMessages = conversation.loadMoreMsgFromDB(mMessages.get(mMessages.size()-1).getMsgId(),size);
             return mMessages;
         }
         return null;
+    }
+
+    public static List<EMMessage> getAllMessages(Context context, String username){
+        List<EMMessage> conversation = getConversation(context, username, -1);
+        return conversation;
     }
 }

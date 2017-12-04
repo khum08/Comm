@@ -32,12 +32,26 @@
             android:padding="@dimen/dp12"
             android:text="@string/action_sign_in"
             android:textSize="@dimen/dp18"
+            android:textColor="@color/name"
             />
 
 
     </LinearLayout>
 
     <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/white"/>
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_money"
+        tools:iv_left="@drawable/ic_attach_money_grey_600_24dp"
+        tools:settingName="钱包"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <ImageView
+        android:id="@+id/imageView2"
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="@color/white"/>

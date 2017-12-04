@@ -2,7 +2,6 @@ package test.yzhk.com.comm.UI.fragments;
 
 import android.content.Intent;
 import android.support.v7.widget.PopupMenu;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +26,10 @@ import test.yzhk.com.comm.engine.ParseConversations;
 import test.yzhk.com.comm.utils.DateUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 
+import static test.yzhk.com.comm.R.id.item_contact;
+import static test.yzhk.com.comm.R.id.item_paymoney;
+import static test.yzhk.com.comm.R.id.item_scan;
+
 /**
  * Created by 大傻春 on 2017/11/24.
  */
@@ -43,13 +46,45 @@ public class ChatFragment extends BaseFragment {
 
     @Override
     public View initView() {
+
         mChatView = View.inflate(mContext, R.layout.fragment_chat, null);
         TextView tv_title = (TextView) mChatView.findViewById(R.id.tv_title);
         tv_title.setText(R.string.app_name);
         ImageView iv_add = (ImageView) mChatView.findViewById(R.id.iv_add);
         iv_add.setVisibility(View.VISIBLE);
+        iv_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSettings(v);
+            }
+        });
 
         return mChatView;
+    }
+
+    private void showSettings(View v) {
+        PopupMenu popupMenu = new PopupMenu(mContext, v);
+        popupMenu.getMenuInflater().inflate(R.menu.chatfragment_more, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case item_scan:
+                        ToastUtil.showToast(mContext,"显示二维码扫描页面");
+                        break;
+                    case item_paymoney:
+                        ToastUtil.showToast(mContext,"显示钱包页面");
+                        break;
+                    case item_contact:
+                        ToastUtil.showToast(mContext,"显示聊天界面");
+                        break;
+                }
+
+                return true;
+            }
+        });
+        popupMenu.show();
+
     }
 
     @Override
@@ -120,7 +155,6 @@ public class ChatFragment extends BaseFragment {
                 return false;
             }
         });
-        popupMenu.setGravity(Gravity.CENTER);
         popupMenu.show();
 
     }

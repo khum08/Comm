@@ -1,13 +1,16 @@
 package test.yzhk.com.comm.UI.fragments;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -67,17 +70,29 @@ public class ContactsFragment extends BaseFragment {
         tv_isloading = (TextView) mContactsView.findViewById(R.id.tv_isloading);
 
         iv_add = (ImageView) mContactsView.findViewById(R.id.iv_add);
-        iv_add.setImageResource(R.drawable.ic_person_add);
+        iv_add.setImageResource(R.drawable.ic_more_detail);
         iv_add.setVisibility(View.VISIBLE);
         iv_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showAddDialog();
+                showBottomDialog();
+//                showAddDialog();
             }
         });
 
 
         return mContactsView;
+    }
+
+    private void showBottomDialog() {
+        View view = View.inflate(mContext, R.layout.view_popupwindow,null);
+        Dialog dialog = new Dialog(mContext, R.style.Theme_AppCompat_Dialog);
+        dialog.setContentView(view);
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.BOTTOM);
+        dialog.show();
+
+
     }
 
     private void showAddDialog() {

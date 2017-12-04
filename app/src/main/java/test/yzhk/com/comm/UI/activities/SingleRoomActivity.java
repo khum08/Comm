@@ -1,6 +1,8 @@
 package test.yzhk.com.comm.UI.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -10,10 +12,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -32,6 +36,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.exceptions.HyphenateException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,7 +48,7 @@ import test.yzhk.com.comm.utils.ToastUtil;
 import test.yzhk.com.comm.utils.UriUtil;
 
 
-public class SingleRoomActivity extends AppCompatActivity implements View.OnClickListener{
+public class SingleRoomActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "SingleRoomActivity";
     private static final int GET_PHOTO = 2;
@@ -66,11 +71,11 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
     private Button mBt_send;
     private ImageView mIv_add_choice;
     private static Uri tempUri;
-    public Handler mHandler = new Handler(){
+    public Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case 0:
                     mChatAdapter.notifyDataSetChanged();
                     break;
@@ -95,7 +100,6 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         startChat();
         initMoreAction();
     }
-
 
 
     private void startChat() {
@@ -235,7 +239,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
             //收到消息
-            Log.e(TAG,"收到了新消息 onMessageReceived");
+            Log.e(TAG, "收到了新消息 onMessageReceived");
             conversationlist.addAll(messages);
             mHandler.sendEmptyMessage(0);
 
@@ -244,7 +248,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         @Override
         public void onCmdMessageReceived(List<EMMessage> messages) {
             //收到透传消息
-            Log.e(TAG,"收到了新消息 onCmdMessageReceived");
+            Log.e(TAG, "收到了新消息 onCmdMessageReceived");
             conversationlist.addAll(messages);
             mChatAdapter.notifyDataSetChanged();
         }
@@ -288,10 +292,10 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initConversation() {
-        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName);
+        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName,6);
         if (newConversationlist != null) {
             conversationlist = newConversationlist;
-            Log.e(TAG,"conversationlist的size为"+conversationlist.size());
+            Log.e(TAG, "conversationlist的size为" + conversationlist.size());
         }
         mChatAdapter = new ChatAdapter();
         mLv_chat_content.setAdapter(mChatAdapter);
@@ -318,17 +322,82 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         });
 
         mIv_add = (ImageView) findViewById(R.id.iv_add);
-        mIv_add.setImageResource(R.drawable.ic_more_detail);
+        mIv_add.setImageResource(R.drawable.ic_person_add);
         mIv_add.setVisibility(View.VISIBLE);
         mIv_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //// TODO: 2017/11/29 进入聊天详情页
+                showPopupMenu(v);
             }
         });
 
     }
 
+    private void showPopupMenu(View v) {
+        PopupMenu popupMenu = new PopupMenu(this, v);
+        popupMenu.getMenuInflater().inflate(R.menu.singleroom_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.item_showall:
+                        //显示所有聊天记录
+                        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName,-1);
+                        newConversationlist = conversationlist;
+                        mChatAdapter.notifyDataSetChanged();
+                        break;
+                    case R.id.item_clear:
+                        conversationlist.clear();
+                        mChatAdapter.notifyDataSetChanged();
+                        //删除聊天记录
+                        EMClient.getInstance().chatManager().deleteConversation(mUserName, true);
+                        break;
+                    case R.id.item_info:
+                        //查看好友信息
+                        Intent intent = new Intent(SingleRoomActivity.this, FriDetailActivity.class);
+                        intent.putExtra("friName", mUserName);
+                        startActivityForResult(intent, 0);
+                        break;
+                    case R.id.item_add2black:
+                        //加入黑名单
+                        showBlackConfirm(mUserName);
+                        break;
+
+                }
+
+                return true;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    //确认加入黑名单对话框
+    private void showBlackConfirm(String userName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder
+                .setMessage("把好友加入黑名单后双方发消息时对方都收不到哦。\n您确认要这么残忍吗？")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            EMClient.getInstance().contactManager().addUserToBlackList(mUserName, true);
+                            ToastUtil.showToast(SingleRoomActivity.this, "加入黑名单成功");
+                        } catch (HyphenateException e) {
+                            e.printStackTrace();
+                            ToastUtil.showToast(SingleRoomActivity.this, "加入黑名单失败");
+                        }
+                    }
+                });
+        TextView textView = new TextView(this);
+        textView.setPadding(45,35,0,0);
+        textView.setTextSize(20);
+        textView.setText("确认加入黑名单吗？");
+        textView.setTextColor(getResources().getColor(R.color.name));
+        builder.setCustomTitle(textView);
+        builder.show();
+    }
 
 
     public class ChatAdapter extends BaseAdapter {
@@ -467,38 +536,39 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         tv_file.setOnClickListener(this);
         tv_money.setOnClickListener(this);
     }
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id){
+        switch (id) {
             case R.id.tv_photo:
                 Intent getPhoto = new Intent(Intent.ACTION_GET_CONTENT);
                 getPhoto.setType("image/*");
-                startActivityForResult(getPhoto,GET_PHOTO);
+                startActivityForResult(getPhoto, GET_PHOTO);
                 break;
             case R.id.tv_camera:
                 Intent openCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                tempUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),"image.jpg"));
-                openCamera.putExtra(MediaStore.EXTRA_OUTPUT,tempUri);
-                startActivityForResult(openCamera,OPEN_CAMERA);
+                tempUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "image.jpg"));
+                openCamera.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
+                startActivityForResult(openCamera, OPEN_CAMERA);
                 break;
             case R.id.tv_video:
-                
+
                 break;
             case R.id.tv_location:
                 showLocationDialog();
                 break;
             case R.id.tv_call:
-                
+
                 break;
             case R.id.tv_facetime:
-                
+
                 break;
             case R.id.tv_file:
-                
+
                 break;
             case R.id.tv_money:
-                
+
                 break;
         }
 
@@ -506,12 +576,12 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){
-            switch (requestCode){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case GET_PHOTO:
                     //加载图片
-                    EMMessage imageSendMessage = EMMessage.createImageSendMessage(UriUtil.getFileAbsolutePath(this,data.getData()), false, mUserName);
+                    EMMessage imageSendMessage = EMMessage.createImageSendMessage(UriUtil.getFileAbsolutePath(this, data.getData()), false, mUserName);
 //                    if (chatType == CHATTYPE_GROUP)
 //                       message.setChatType(ChatType.GroupChat);
 //                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
@@ -519,7 +589,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
                     mChatAdapter.notifyDataSetChanged();
                     break;
                 case OPEN_CAMERA:
-                    EMMessage imageSendMessage2 = EMMessage.createImageSendMessage(UriUtil.getFileAbsolutePath(this,tempUri), false, mUserName);
+                    EMMessage imageSendMessage2 = EMMessage.createImageSendMessage(UriUtil.getFileAbsolutePath(this, tempUri), false, mUserName);
 //                    if (chatType == CHATTYPE_GROUP)
 //                       message.setChatType(ChatType.GroupChat);
 //                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
