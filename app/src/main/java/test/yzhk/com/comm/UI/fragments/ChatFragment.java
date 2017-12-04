@@ -1,6 +1,9 @@
 package test.yzhk.com.comm.UI.fragments;
 
 import android.content.Intent;
+import android.support.v7.widget.PopupMenu;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -9,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
@@ -21,6 +25,7 @@ import test.yzhk.com.comm.UI.activities.SingleRoomActivity;
 import test.yzhk.com.comm.dao.ConversationsDao;
 import test.yzhk.com.comm.engine.ParseConversations;
 import test.yzhk.com.comm.utils.DateUtil;
+import test.yzhk.com.comm.utils.ToastUtil;
 
 /**
  * Created by 大傻春 on 2017/11/24.
@@ -32,6 +37,7 @@ public class ChatFragment extends BaseFragment {
     public Map<String, EMConversation> mMap;
     public ArrayList<String> mKeyList;
     private static final String TAG = "ChatFragment";
+    private ConversationAdapter mAdapter;
 
     private ListView mLv_chat;
 
@@ -61,7 +67,8 @@ public class ChatFragment extends BaseFragment {
 //            String s = mKeyList.get(i);
 //            Log.e(TAG, s);
 //        }
-        ConversationAdapter mAdapter = new ConversationAdapter();
+
+        mAdapter = new ConversationAdapter();
 
         mLv_chat.setAdapter(mAdapter);
         mLv_chat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -79,6 +86,42 @@ public class ChatFragment extends BaseFragment {
 
             }
         });
+        mLv_chat.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                showPopupMenu(view,position);
+                return true;
+            }
+        });
+
+    }
+
+    private void showPopupMenu(View view,final int position) {
+
+        PopupMenu popupMenu = new PopupMenu(mContext, view);
+        popupMenu.getMenuInflater().inflate(R.menu.conversation_menu,popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.item_delete:
+                        String conversationId = mKeyList.get(position);
+                        EMClient.getInstance().chatManager().deleteConversation(conversationId, true);
+                        mKeyList.remove(position);
+                        mAdapter.notifyDataSetChanged();
+                        ToastUtil.showToast(mContext,"删除成功");
+                        break;
+                    case R.id.item_markread:
+                        ToastUtil.showToast(mContext,"聊天标记为已读");
+                        break;
+                }
+
+
+                return false;
+            }
+        });
+        popupMenu.setGravity(Gravity.CENTER);
+        popupMenu.show();
 
     }
 

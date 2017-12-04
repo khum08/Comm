@@ -61,7 +61,7 @@ public class MyApplication extends Application {
         options.setRequireDeliveryAck(true);
         // 设置是否需要服务器收到消息确认
 //        options.setRequireServerAck(true);
-       options.setRequireDeliveryAck(true);
+        options.setRequireDeliveryAck(true);
         // 收到好友申请是否自动同意，如果是自动同意就不会收到好友请求的回调，因为sdk会自动处理，默认为true
 //        options.setAcceptInvitationAlways(false);
         // 设置是否自动接收加群邀请，如果设置了当收到群邀请会自动同意加入
@@ -74,7 +74,6 @@ public class MyApplication extends Application {
         // options.setGCMNumber(MLConstants.ML_GCM_NUMBER);
         // 设置集成小米推送的appid和appkey
         // options.setMipushConfig(MLConstants.ML_MI_APP_ID, MLConstants.ML_MI_APP_KEY);
-
         // 调用初始化方法初始化sdk
         EMClient.getInstance().init(mContext, options);
 
