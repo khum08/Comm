@@ -20,8 +20,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.READ_PROFILE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
     <application
         android:name=".global.MyApplication"
@@ -81,6 +80,8 @@
             android:name=".UI.activities.SingleRoomActivity"
             android:label="@string/title_activity_single_room"
             android:theme="@style/MyAppTheme">
+        </activity>
+        <activity android:name=".BlackNumberActivity">
         </activity>
     </application>
 

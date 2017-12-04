@@ -29,20 +29,19 @@ dependencies {
     })
     //Optional compile for GCM (Google Cloud Messaging).
     compile files('libs/hyphenatechat_3.3.6.jar')
+
+    //    compile 'com.github.bumptech.glide:glide:4.3.0'
+//    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
+
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'
     compile 'com.android.support:support-vector-drawable:25.2.0'
     compile 'com.android.support:support-v4:25.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
-    testCompile 'junit:junit:4.12'
     compile 'com.github.hotchemi:permissionsdispatcher:3.0.1'
-    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.0.1'
-
     compile 'com.github.bumptech.glide:glide:3.7.0'
-
     compile 'com.flipboard:bottomsheet-core:1.5.3'
     compile 'com.flipboard:bottomsheet-commons:1.5.3'
-//    compile 'com.github.bumptech.glide:glide:4.3.0'
-//    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
-
+    testCompile 'junit:junit:4.12'
+    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.0.1'
 }

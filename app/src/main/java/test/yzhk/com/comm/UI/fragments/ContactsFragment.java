@@ -15,7 +15,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.flipboard.bottomsheet.BottomSheetLayout;
 import com.flipboard.bottomsheet.commons.MenuSheetView;
@@ -24,6 +23,7 @@ import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.List;
 
+import test.yzhk.com.comm.BlackNumberActivity;
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.FriDetailActivity;
 import test.yzhk.com.comm.utils.ToastUtil;
@@ -96,12 +96,12 @@ public class ContactsFragment extends BaseFragment {
                                 showAddDialog();
                                 break;
                             case R.id.tv_blacknum:
-                                showBlackNumber();
+                                Intent intent = new Intent(mContext, BlackNumberActivity.class);
+                                startActivity(intent);
                                 break;
                             case R.id.tv_nothing:
                                 break;
                         }
-                        Toast.makeText(mContext, item.getTitle(), Toast.LENGTH_SHORT).show();
                         if (bottomSheetLayout.isSheetShowing()) {
                             bottomSheetLayout.dismissSheet();
                         }
@@ -112,11 +112,6 @@ public class ContactsFragment extends BaseFragment {
         bottomSheetLayout.showWithSheetView(menuSheetView);
 
 
-    }
-
-    private void showBlackNumber() {
-        ToastUtil.showToast(mContext,"即将进入黑名单activity");
-        //// TODO: 2017/12/4  
     }
 
     private void showAddDialog() {

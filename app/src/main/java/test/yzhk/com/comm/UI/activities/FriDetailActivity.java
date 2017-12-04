@@ -32,7 +32,24 @@ public class FriDetailActivity extends AppCompatActivity {
         initTitle();
         deleteFri();
         sendMsg();
+        add2blacknumber();
 
+    }
+
+    private void add2blacknumber() {
+        SettingItemView item_add2black = (SettingItemView) findViewById(R.id.item_add2black);
+        item_add2black.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    EMClient.getInstance().contactManager().addUserToBlackList(mFriName,true);
+                    ToastUtil.showToast(FriDetailActivity.this,"添加黑名单成功");
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                    ToastUtil.showToast(FriDetailActivity.this,"添加黑名单失败");
+                }
+            }
+        });
     }
 
     //初始化自定义的titlebar
