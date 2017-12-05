@@ -1,4 +1,4 @@
-package test.yzhk.com.comm;
+package test.yzhk.com.comm.UI.activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -17,6 +17,7 @@ import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.List;
 
+import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.utils.ToastUtil;
 
 public class BlackNumberActivity extends AppCompatActivity {

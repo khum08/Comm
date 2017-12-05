@@ -81,7 +81,7 @@
             android:label="@string/title_activity_single_room"
             android:theme="@style/MyAppTheme">
         </activity>
-        <activity android:name=".BlackNumberActivity">
+        <activity android:name=".UI.activities.BlackNumberActivity">
         </activity>
     </application>
 

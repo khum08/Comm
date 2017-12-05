@@ -23,7 +23,7 @@ import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.List;
 
-import test.yzhk.com.comm.BlackNumberActivity;
+import test.yzhk.com.comm.UI.activities.BlackNumberActivity;
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.FriDetailActivity;
 import test.yzhk.com.comm.utils.ToastUtil;
