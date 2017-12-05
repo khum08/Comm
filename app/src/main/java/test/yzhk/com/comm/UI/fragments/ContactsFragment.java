@@ -6,14 +6,17 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.flipboard.bottomsheet.BottomSheetLayout;
@@ -21,10 +24,11 @@ import com.flipboard.bottomsheet.commons.MenuSheetView;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.exceptions.HyphenateException;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import test.yzhk.com.comm.UI.activities.BlackNumberActivity;
 import test.yzhk.com.comm.R;
+import test.yzhk.com.comm.UI.activities.BlackNumberActivity;
 import test.yzhk.com.comm.UI.activities.FriDetailActivity;
 import test.yzhk.com.comm.utils.ToastUtil;
 
@@ -38,7 +42,8 @@ public class ContactsFragment extends BaseFragment {
     private View mContactsView;
     private ListView mLv_contact;
 
-    private List<String> mUsernames;
+    private List<String> mUsernames = new ArrayList<>();
+    private List<String> serverUserList;
     private TextView tv_title;
     private TextView tv_isloading;
     private ImageView iv_add;
@@ -53,9 +58,9 @@ public class ContactsFragment extends BaseFragment {
 
             mContactsAdapter = new contactsAdapter();
             mLv_contact.setAdapter(mContactsAdapter);
-
         }
     };
+    private SearchView mSearchview;
 
 
     @Override
@@ -69,6 +74,7 @@ public class ContactsFragment extends BaseFragment {
 
 
         tv_isloading = (TextView) mContactsView.findViewById(R.id.tv_isloading);
+        mSearchview = (SearchView) mContactsView.findViewById(R.id.searchview);
 
         iv_add = (ImageView) mContactsView.findViewById(R.id.iv_add);
         iv_add.setImageResource(R.drawable.ic_more_detail);
@@ -92,6 +98,9 @@ public class ContactsFragment extends BaseFragment {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()){
+                            case R.id.tv_search:
+                                showSearchView();
+                                break;
                             case R.id.tv_add_fri:
                                 showAddDialog();
                                 break;
@@ -100,6 +109,7 @@ public class ContactsFragment extends BaseFragment {
                                 startActivity(intent);
                                 break;
                             case R.id.tv_nothing:
+                                ToastUtil.showToast(mContext,"作者真的很帅");
                                 break;
                         }
                         if (bottomSheetLayout.isSheetShowing()) {
@@ -111,6 +121,44 @@ public class ContactsFragment extends BaseFragment {
         menuSheetView.inflateMenu(R.menu.bottomsheet_contacts);
         bottomSheetLayout.showWithSheetView(menuSheetView);
 
+
+    }
+
+    //联系人搜索框
+    private void showSearchView(){
+        mSearchview.setVisibility(View.VISIBLE);
+        AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(1000);
+        anim.setFillAfter(true);
+        mSearchview.startAnimation(anim);
+        mSearchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                if (!TextUtils.isEmpty(newText)){
+                    mUsernames.clear();
+                    for(int i = 0; i < serverUserList.size(); i++){
+                        String s = serverUserList.get(i);
+                        if(s.contains(newText+"")){
+                            mUsernames.add(s);
+                        }
+                    }
+                    mContactsAdapter.notifyDataSetChanged();
+                }else{
+                    mUsernames.clear();
+                    for(int i = 0; i < serverUserList.size(); i++){
+                        String s = serverUserList.get(i);
+                        mUsernames.add(s);
+                    }
+                    mContactsAdapter.notifyDataSetChanged();
+                }
+                return true;
+            }
+        });
 
     }
 
@@ -171,10 +219,11 @@ public class ContactsFragment extends BaseFragment {
             @Override
             public void run() {
                 try {
-                    mUsernames = EMClient.getInstance().contactManager().getAllContactsFromServer();
-                    if (mUsernames != null && mUsernames.size() == 0) {
+                    serverUserList = EMClient.getInstance().contactManager().getAllContactsFromServer();
+                    if (serverUserList != null && serverUserList.size() == 0) {
                         ToastUtil.showToast(mContext, "暂时还没有好友哦");
                     }
+                    mUsernames.addAll(serverUserList);
                     mHandler.sendEmptyMessage(0);
                 } catch (HyphenateException e) {
                     e.printStackTrace();

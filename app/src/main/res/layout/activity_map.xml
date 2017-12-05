@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="test.yzhk.com.comm.UI.activities.MapActivity">
+
+    <include layout="@layout/custom_actionbar"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/bmapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"/>
+
+        <RelativeLayout
+            android:id="@+id/rlAddBill"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="#80000000"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/ll01"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="169dp"
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_toLeftOf="@+id/miniFab01"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingBottom="5dp"
+                    android:text="发送 "
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/miniFab01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/dp30"
+                    android:src="@drawable/ic_send_white_24dp"
+                    app:backgroundTint="@color/name"
+                    app:elevation="@dimen/dp10"
+                    app:fabSize="normal"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll02"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/ll01"
+                android:paddingBottom="@dimen/dp16"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_toLeftOf="@+id/miniFab02"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingBottom="5dp"
+                    android:text="搜索 "
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/miniFab02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/dp30"
+                    android:src="@drawable/ic_search_white_24dp"
+                    app:backgroundTint="@color/name"
+                    app:elevation="@dimen/dp10"
+                    app:fabSize="normal"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll03"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/ll02"
+                android:paddingBottom="@dimen/dp16"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_toLeftOf="@+id/miniFab02"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingBottom="5dp"
+                    android:text="我 "
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/miniFab03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/dp30"
+                    android:src="@drawable/ic_my_location_white_24dp"
+                    app:backgroundTint="@color/name"
+                    app:elevation="@dimen/dp10"
+                    app:fabSize="normal"
+                    />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="100dp"
+            android:layout_marginRight="@dimen/dp30"
+            android:src="@drawable/ic_more_detail"
+            app:backgroundTint="@color/name"
+            app:elevation="@dimen/dp10"
+            app:fabSize="normal"
+            />
+
+    </RelativeLayout>
+</LinearLayout>

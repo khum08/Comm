@@ -30,6 +30,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.bumptech.glide.Glide;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
@@ -556,7 +557,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
 
                 break;
             case R.id.tv_location:
-                showLocationDialog();
+                enterMapActivity();
                 break;
             case R.id.tv_call:
 
@@ -603,7 +604,12 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void showLocationDialog() {
+    //进入千度地图页面
+    private void enterMapActivity() {
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+        //初始化地图sdk
+        SDKInitializer.initialize(getApplicationContext());
     }
 
 }

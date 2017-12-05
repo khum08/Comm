@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:id="@+id/tv_search"
+          android:icon="@drawable/ic_search_blue_grey_300_24dp"
+          android:title="搜索"/>
     <item android:id="@+id/tv_add_fri"
           android:icon="@drawable/ic_person_add_blue_grey_300_24dp"
           android:title="添加好友"/>
