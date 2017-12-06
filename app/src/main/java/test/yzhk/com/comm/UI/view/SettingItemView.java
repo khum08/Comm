@@ -1,7 +1,6 @@
 package test.yzhk.com.comm.UI.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +8,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import test.yzhk.com.comm.R;
+
+import static test.yzhk.com.comm.R.id.tv_setting;
 
 
 /**
@@ -20,7 +21,7 @@ public class SettingItemView extends RelativeLayout {
     private static final String NAME = "http://schemas.test.yzhk.com";
     private int mIv_left;
     private String mTv_setting;
-    private String mIntent;
+    private TextView mTextView;
 
     public SettingItemView(Context context) {
         super(context);
@@ -32,7 +33,6 @@ public class SettingItemView extends RelativeLayout {
         super(context, attrs);
         mIv_left = attrs.getAttributeResourceValue(NAME, "iv_left", R.drawable.ic_right);
         mTv_setting = attrs.getAttributeValue(NAME, "settingName");
-        mIntent = attrs.getAttributeValue(NAME, "intent");
 
         initView();
     }
@@ -43,22 +43,17 @@ public class SettingItemView extends RelativeLayout {
     }
 
     private void initView() {
-        View.inflate(getContext(), R.layout.view_setting_item,this);
+        View.inflate(getContext(), R.layout.view_setting_item, this);
         ImageView setting_item = (ImageView) findViewById(R.id.iv_setting_item);
-        TextView tv_setting = (TextView) findViewById(R.id.tv_setting);
-        ImageView iv_right = (ImageView) findViewById(R.id.iv_right);
+        mTextView = (TextView) findViewById(tv_setting);
 
         setting_item.setImageResource(mIv_left);
-        tv_setting.setText(mTv_setting);
-        iv_right.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mIntent!=null){
-                    getContext().startActivity(new Intent(getContext(),mIntent.getClass()));
-                }
-            }
-        });
+        mTextView.setText(mTv_setting);
 
+    }
+
+    public void setText(String string) {
+        mTextView.setText(string);
     }
 
 

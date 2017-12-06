@@ -17,12 +17,17 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <test.yzhk.com.comm.UI.view.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/ci_headerview"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            app:border_width="2dp"
+            app:border_color="@color/name"
+            android:padding="@dimen/dp10"
             android:layout_marginTop="@dimen/dp20"
             android:layout_weight="0.56"
-            android:src="@android:drawable/sym_def_app_icon"/>
+            android:src="@drawable/def"/>
 
         <TextView
             android:id="@+id/tv_username"
@@ -43,15 +48,33 @@
         android:layout_height="10dp"
         android:background="@color/white"/>
     <test.yzhk.com.comm.UI.view.SettingItemView
-        android:id="@+id/item_money"
-        tools:iv_left="@drawable/ic_attach_money_grey_600_24dp"
-        tools:settingName="钱包"
+        android:id="@+id/item_nickname"
+        tools:iv_left="@drawable/ic_bookmark_border_grey_600_24dp"
+        tools:settingName="昵称:小明"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_signning"
+        tools:iv_left="@drawable/ic_loyalty_grey_600_24dp"
+        tools:settingName="签名:天高任鸟飞"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/white"/>
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_money"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:iv_left="@drawable/ic_attach_money_grey_600_24dp"
+        tools:settingName="钱包"
+        />
+
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="@color/white"/>
@@ -70,10 +93,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="@color/white"/>
+
     <test.yzhk.com.comm.UI.view.SettingItemView
         android:id="@+id/item_setting"
         tools:iv_left="@drawable/ic_settings"

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="test.yzhk.com.comm.UI.activities.NickSigningActivity">
+    <include layout="@layout/custom_actionbar"/>
+    <EditText
+        android:id="@+id/et_content_nick"
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/dp10"
+        android:layout_marginLeft="@dimen/dp10"
+        android:hint="请输入"/>
+    <Button
+        android:id="@+id/tv_confirm_nick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp20"
+        android:layout_marginRight="@dimen/dp20"
+        android:layout_marginTop="40dp"
+        android:textSize="@dimen/dp20"
+        android:text="确定"
+        android:textColor="@color/white"
+        android:background="@drawable/button_background"/>
+    <TextView
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="@dimen/dp10"
+        android:layout_marginLeft="@dimen/dp10"
+        android:textSize="@dimen/dp18"
+        android:text="人生好比是海上的波浪\n有时起有时落"/>
+
+</LinearLayout>
