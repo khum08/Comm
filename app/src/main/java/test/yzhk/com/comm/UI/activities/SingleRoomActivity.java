@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
@@ -83,6 +84,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
             }
         }
     };
+    private SwipeRefreshLayout mSingleroon_refresh;
 
 
     @Override
@@ -100,9 +102,36 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         initListView();
         startChat();
         initMoreAction();
+
+        initRefresh();
+    }
+
+    //处理下拉刷新操作
+    private void initRefresh() {
+        mSingleroon_refresh = (SwipeRefreshLayout) findViewById(R.id.singleroon_refresh);
+        mSingleroon_refresh.setColorSchemeResources(R.color.red,R.color.colorPrimary,R.color.name);
+        mSingleroon_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Thread(){
+                    @Override
+                    public void run() {
+                        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName,6);
+                        if (newConversationlist != null) {
+                            conversationlist = newConversationlist;
+                            Log.e(TAG, "conversationlist的size为" + conversationlist.size());
+                        }
+                        mHandler.sendEmptyMessage(0);
+                        mSingleroon_refresh.setRefreshing(false);
+                    }
+                }.start();
+
+            }
+        });
     }
 
 
+    //初始化底部聊天输入控件
     private void startChat() {
 
         mEt_chatcontent = (EditText) findViewById(R.id.et_chatcontent);
@@ -292,6 +321,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         mLv_chat_content.setAdapter(mChatAdapter);
     }
 
+    //初始化聊天记录
     private void initConversation() {
         List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName,6);
         if (newConversationlist != null) {
@@ -323,7 +353,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         });
 
         mIv_add = (ImageView) findViewById(R.id.iv_add);
-        mIv_add.setImageResource(R.drawable.ic_person_add);
+        mIv_add.setImageResource(R.drawable.ic_person_white_24dp);
         mIv_add.setVisibility(View.VISIBLE);
         mIv_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -334,6 +364,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
 
     }
 
+    //右上角更多操作按钮
     private void showPopupMenu(View v) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.getMenuInflater().inflate(R.menu.singleroom_menu, popupMenu.getMenu());
@@ -365,7 +396,6 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
                         break;
 
                 }
-
                 return true;
             }
         });

@@ -1,6 +1,9 @@
 package test.yzhk.com.comm.UI.fragments;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +46,17 @@ public class ChatFragment extends BaseFragment {
     private ConversationAdapter mAdapter;
 
     private ListView mLv_chat;
+    private SwipeRefreshLayout mSwipeRefreshView;
+    public Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0:
+                    mAdapter.notifyDataSetChanged();
+                    break;
+            }
+        }
+    };
 
     @Override
     public View initView() {
@@ -62,6 +76,7 @@ public class ChatFragment extends BaseFragment {
         return mChatView;
     }
 
+    //右上角设置条目
     private void showSettings(View v) {
         PopupMenu popupMenu = new PopupMenu(mContext, v);
         popupMenu.getMenuInflater().inflate(R.menu.chatfragment_more, popupMenu.getMenu());
@@ -98,10 +113,6 @@ public class ChatFragment extends BaseFragment {
                 mKeyList.add(entry.getKey());
             }
         }
-//        for (int i = 0; i < mKeyList.size(); i++) {
-//            String s = mKeyList.get(i);
-//            Log.e(TAG, s);
-//        }
 
         mAdapter = new ConversationAdapter();
 
@@ -129,8 +140,41 @@ public class ChatFragment extends BaseFragment {
             }
         });
 
+        initSwipeRefresh();
     }
 
+    //初始化下拉刷新控件
+    private void initSwipeRefresh() {
+        mSwipeRefreshView = (SwipeRefreshLayout) mChatView.findViewById(R.id.swipe_refresh);
+        mSwipeRefreshView.setColorSchemeResources(R.color.red, R.color.colorPrimary, R.color.name);
+        // 下拉时触发SwipeRefreshLayout的下拉动画，动画完毕之后就会回调这个方法
+        mSwipeRefreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Thread(){
+                    @Override
+                    public void run() {
+                        Map<String, EMConversation> allConversations = ConversationsDao.getAllConversations();
+                        mMap = ParseConversations.parse(allConversations);
+                        if (mMap != null) {
+                            if(mKeyList==null)
+                                mKeyList = new ArrayList<>();
+                            for (Map.Entry<String, EMConversation> entry : mMap.entrySet()) {
+                                mKeyList.clear();
+                                mKeyList.add(entry.getKey());
+                            }
+                        }
+                        mHandler.sendEmptyMessage(0);
+                        mSwipeRefreshView.setRefreshing(false);
+                    }
+                }.start();
+                // 这个不能写在外边，不然会直接收起来
+                //
+            }
+        });
+    }
+
+    //长按条目显示更多操作
     private void showPopupMenu(View view,final int position) {
 
         PopupMenu popupMenu = new PopupMenu(mContext, view);
@@ -147,6 +191,7 @@ public class ChatFragment extends BaseFragment {
                         ToastUtil.showToast(mContext,"删除成功");
                         break;
                     case R.id.item_markread:
+                        //// TODO: 2017/12/6
                         ToastUtil.showToast(mContext,"聊天标记为已读");
                         break;
                 }
@@ -156,9 +201,9 @@ public class ChatFragment extends BaseFragment {
             }
         });
         popupMenu.show();
-
     }
 
+    //listview 适配器
     public class ConversationAdapter extends BaseAdapter {
 
         @Override
@@ -240,6 +285,17 @@ public class ChatFragment extends BaseFragment {
         public TextView tv_conv_content;
         public TextView tv_time;
         public TextView tv_unread;
+    }
+
+    public void createConversation(){
+        Map<String, EMConversation> allConversations = ConversationsDao.getAllConversations();
+        mMap = ParseConversations.parse(allConversations);
+        if (mMap != null) {
+            for (Map.Entry<String, EMConversation> entry : mMap.entrySet()) {
+                mKeyList.add(entry.getKey());
+            }
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
 }

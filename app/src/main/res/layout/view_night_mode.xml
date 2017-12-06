@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white_"
+    android:paddingBottom="@dimen/dp5"
+    android:paddingLeft="@dimen/dp16"
+    android:paddingRight="@dimen/dp16"
+    android:paddingTop="@dimen/dp5">
+
+    <ImageView
+        android:id="@+id/iv_setting_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:padding="@dimen/dp5"
+        android:src="@drawable/ic_voicemail_teal_a700_24dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/dp8"
+        android:layout_marginRight="40dp"
+        android:layout_toRightOf="@id/iv_setting_item"
+        android:maxLines="2"
+        android:text="夜间模式"
+        android:textSize="@dimen/dp18"
+        />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/tb_nightmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:checked="true"
+        android:shadowColor="@color/name"
+        android:textColor="@color/name"
+        android:textOff="关"
+        android:textOn="开"/>
+</RelativeLayout>

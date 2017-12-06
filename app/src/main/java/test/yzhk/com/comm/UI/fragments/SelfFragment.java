@@ -26,7 +26,6 @@ import test.yzhk.com.comm.utils.PrefUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 
 import static android.app.Activity.RESULT_OK;
-import static test.yzhk.com.comm.R.id.item_nickname;
 
 /**
  * Created by 大傻春 on 2017/11/24.
@@ -88,7 +87,7 @@ public class SelfFragment extends BaseFragment {
     }
 
     private void initNickName() {
-        mItem_nickname = (SettingItemView) selfPage.findViewById(item_nickname);
+        mItem_nickname = (SettingItemView) selfPage.findViewById(R.id.item_nickname);
         String nickname = PrefUtil.getString(mContext, "nickname", "昵称:小圆");
         mItem_nickname.setText("昵称:"+nickname);
         mItem_nickname.setOnClickListener(new View.OnClickListener() {

@@ -1,15 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:me="http://schemas.test.yzhk.com"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="test.yzhk.com.comm.UI.activities.SettingActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    >
+
 
     <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:title="设置"
+        app:navigationIcon="@drawable/ic_back"
+        app:titleTextColor="@color/white"
         android:background="@color/colorPrimary"
         />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/white"/>
+
+
+    <include
+        layout="@layout/view_night_mode"/>
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_textsize"
+        me:iv_left="@drawable/ic_text_format_teal_700_24dp"
+        me:settingName="字体大小"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/white"/>
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_writer_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        me:iv_left="@drawable/ic_info_outline_teal_700_24dp"
+        me:settingName="作者信息"
+        />
+
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_contact_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        me:iv_left="@drawable/ic_contact_mail_teal_700_24dp"
+        me:settingName="联系作者"
+        />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/white"/>
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_pay"
+        me:iv_left="@drawable/ic_payment_teal_700_24dp"
+        me:settingName="支持作者"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+
 
 </LinearLayout>

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,18 @@ public class MainActivity extends AppCompatActivity {
 
 
     private int lastShowFragment = 0;
+    private BottomNavigationView mNavigation;
+    private FragmentManager mFm;
+    private Fragment[] mFragments;
+    private BaseFragment mChatFragment;
+    private BaseFragment mMapFragment;
+    private BaseFragment mSelfFragment;
+    public BottomSheetLayout mRootView;
+    private static final String TAG_CONVERSATION = "TAG_CONVERSATION";
+    private static final String TAG_CONTACTS = "TAG_CONTACTS";
+    private static final String TAG_SETTING = "TAG_SETTING";
+    private String[] tags= {TAG_CONVERSATION,TAG_CONTACTS,TAG_SETTING};
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -59,12 +72,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
-    private BottomNavigationView mNavigation;
-    private Fragment[] mFragments;
-    private BaseFragment mChatFragment;
-    private BaseFragment mMapFragment;
-    private BaseFragment mSelfFragment;
-    public BottomSheetLayout mRootView;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mRootView = (BottomSheetLayout) findViewById(R.id.container);
 
-
         initView();
         checkConnect();
 //        addFri();
@@ -94,31 +102,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //好友申请监听器
     public class ContactListiener implements EMContactListener {
 
         @Override
         public void onContactAdded(String s) {
-
         }
-
         @Override
         public void onContactDeleted(String s) {
-
         }
-
         @Override
         public void onContactInvited(String s, String s1) {
             showContactInvited(s, s1);
         }
-
         @Override
         public void onFriendRequestAccepted(String s) {
-
         }
-
         @Override
         public void onFriendRequestDeclined(String s) {
-
         }
     }
 
@@ -168,12 +169,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //监听连接情况
     private void checkConnect() {
         //注册一个监听连接状态的listener
         EMClient.getInstance().addConnectionListener(new MyConnectionListener());
     }
 
-
+    //监听器
     private class MyConnectionListener implements EMConnectionListener {
         @Override
         public void onConnected() {
@@ -192,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         if (NetUtils.hasNetwork(MainActivity.this)) {
                             //连接不到聊天服务器
-
                         } else {
                         }
                         //当前网络不可用，请检查网络设置
@@ -202,11 +203,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    //初始化底部选择框
     private void initView() {
         mNavigation = (BottomNavigationView) findViewById(R.id.navigation);
         mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-
     }
 
 
@@ -216,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //初始化fragment
     private void initFragments() {
         mChatFragment = new ChatFragment();
         mMapFragment = new ContactsFragment();
@@ -227,12 +229,14 @@ public class MainActivity extends AppCompatActivity {
         switchFragment(lastShowFragment,0);
     }
 
+    //fragment间的切换
     public void switchFragment(int lastIndex, int Index) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        mFm = getSupportFragmentManager();
+        FragmentTransaction transaction = mFm.beginTransaction();
         transaction.hide(mFragments[lastIndex]);
 
         if (!mFragments[Index].isAdded()) {
-            transaction.add(R.id.content, mFragments[Index]);
+            transaction.add(R.id.content, mFragments[Index],tags[Index]);
         }
         transaction.show(mFragments[Index]).commitAllowingStateLoss();
     }
@@ -251,4 +255,10 @@ public class MainActivity extends AppCompatActivity {
 //    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
 //        super.onSaveInstanceState(outState, outPersistentState);
 //    }
+
+    public ChatFragment getConversationFragment(){
+        ChatFragment conversationFragment = (ChatFragment) mFm.findFragmentByTag(TAG_CONVERSATION);
+        return conversationFragment;
+
+    }
 }

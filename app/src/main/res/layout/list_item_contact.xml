@@ -2,25 +2,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-    android:layout_marginRight="@dimen/dp16">
-    <ImageView
+                android:background="@color/white"
+    >
+    <test.yzhk.com.comm.UI.view.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/iv_contact_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="@dimen/dp10"
+        android:layout_marginBottom="@dimen/dp10"
+        android:layout_marginLeft="@dimen/dp20"
+        android:padding="@dimen/dp10"
         android:src="@drawable/ic_head_image"
-        android:layout_margin="@dimen/dp10"/>
+        app:border_color="@color/name"
+        app:border_width="2dp"/>
     <TextView
         android:id="@+id/tv_contact_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="小明"
         android:textSize="@dimen/dp18"
+        android:layout_toRightOf="@id/iv_contact_icon"
         android:textColor="@color/black"
-        android:layout_marginLeft="@dimen/dp5"
+        android:layout_marginLeft="@dimen/dp30"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/iv_contact_icon"
-        android:layout_marginStart="17dp"/>
-
-
+        />
 
 </RelativeLayout>

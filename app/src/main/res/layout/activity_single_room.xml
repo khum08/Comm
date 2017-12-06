@@ -12,15 +12,21 @@
         layout="@layout/custom_actionbar"/>
 
 
-    <ListView
-        android:id="@+id/lv_chat_content"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/singleroon_refresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="@null"
-        android:listSelector="@android:color/transparent"
-        >
-    </ListView>
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/lv_chat_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent"
+            >
+        </ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
     <LinearLayout

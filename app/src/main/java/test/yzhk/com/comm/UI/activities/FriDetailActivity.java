@@ -18,6 +18,9 @@ import test.yzhk.com.comm.utils.ToastUtil;
 public class FriDetailActivity extends AppCompatActivity {
 
     private String mFriName;
+    private static final int DELETE = 699;
+    private static final int ADD_BLACK = 818;
+    private static final int CREATE_CONVERSATION = 899;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,7 @@ public class FriDetailActivity extends AppCompatActivity {
 
     }
 
+    //加入黑名单
     private void add2blacknumber() {
         SettingItemView item_add2black = (SettingItemView) findViewById(R.id.item_add2black);
         item_add2black.setOnClickListener(new View.OnClickListener() {
@@ -43,6 +47,10 @@ public class FriDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     EMClient.getInstance().contactManager().addUserToBlackList(mFriName,true);
+                    Intent intent = new Intent();
+                    intent.putExtra("friName",mFriName);
+                    setResult(ADD_BLACK,intent);
+                    finish();
                     ToastUtil.showToast(FriDetailActivity.this,"添加黑名单成功");
                 } catch (HyphenateException e) {
                     e.printStackTrace();
@@ -76,13 +84,13 @@ public class FriDetailActivity extends AppCompatActivity {
         bt_msg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(FriDetailActivity.this, SingleRoomActivity.class);
-                intent.putExtra("userName",mFriName);
-                startActivity(intent);
-                FriDetailActivity.this.finish();
+                //创建回话
+                Intent creatConversation = new Intent();
+                creatConversation.putExtra("friName",mFriName);
+                setResult(CREATE_CONVERSATION,creatConversation);
+                finish();
             }
         });
-
 
     }
 
@@ -99,7 +107,7 @@ public class FriDetailActivity extends AppCompatActivity {
                                         EMClient.getInstance().contactManager().deleteContact(mFriName);
                                         ToastUtil.showToast(FriDetailActivity.this,"删除好友成功");
                                         Intent intent = new Intent().putExtra("friName", mFriName);
-                                        FriDetailActivity.this.setResult(2,intent);
+                                        FriDetailActivity.this.setResult(DELETE,intent);
                                         FriDetailActivity.this.finish();
 
                                     } catch (HyphenateException e) {

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -29,6 +30,8 @@ import java.util.List;
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.BlackNumberActivity;
 import test.yzhk.com.comm.UI.activities.FriDetailActivity;
+import test.yzhk.com.comm.UI.activities.MainActivity;
+import test.yzhk.com.comm.UI.activities.SingleRoomActivity;
 import test.yzhk.com.comm.utils.ToastUtil;
 
 /**
@@ -47,6 +50,10 @@ public class ContactsFragment extends BaseFragment {
     private TextView tv_isloading;
     private ImageView iv_add;
     private contactsAdapter mContactsAdapter;
+    private static final int ENTER_FRI_ACTIVITY = 916;
+    private static final int DELETE = 699;
+    private static final int ADD_BLACK = 818;
+    private static final int CREATE_CONVERSATION = 899;
 
     public Handler mHandler = new Handler() {
 
@@ -85,18 +92,18 @@ public class ContactsFragment extends BaseFragment {
             }
         });
 
-
         return mContactsView;
     }
 
+    //显示底部bottomsheet
     private void showBottomSheet() {
-        final BottomSheetLayout bottomSheetLayout = mContext.mRootView ;
+        final BottomSheetLayout bottomSheetLayout = mContext.mRootView;
 
         MenuSheetView menuSheetView =
                 new MenuSheetView(mContext, MenuSheetView.MenuType.LIST, "操作...", new MenuSheetView.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()){
+                        switch (item.getItemId()) {
                             case R.id.tv_search:
                                 showSearchView();
                                 break;
@@ -108,7 +115,7 @@ public class ContactsFragment extends BaseFragment {
                                 startActivity(intent);
                                 break;
                             case R.id.tv_nothing:
-                                ToastUtil.showToast(mContext,"作者真的很帅");
+                                ToastUtil.showToast(mContext, "作者真的很帅");
                                 break;
                         }
                         if (bottomSheetLayout.isSheetShowing()) {
@@ -124,7 +131,7 @@ public class ContactsFragment extends BaseFragment {
     }
 
     //联系人搜索框
-    private void showSearchView(){
+    private void showSearchView() {
         mSearchview.setVisibility(View.VISIBLE);
         AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
         anim.setDuration(1000);
@@ -135,21 +142,22 @@ public class ContactsFragment extends BaseFragment {
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                if (!TextUtils.isEmpty(newText)){
+                if (!TextUtils.isEmpty(newText)) {
                     mUsernames.clear();
-                    for(int i = 0; i < serverUserList.size(); i++){
+                    for (int i = 0; i < serverUserList.size(); i++) {
                         String s = serverUserList.get(i);
-                        if(s.contains(newText+"")){
+                        if (s.contains(newText + "")) {
                             mUsernames.add(s);
                         }
                     }
                     mContactsAdapter.notifyDataSetChanged();
-                }else{
+                } else {
                     mUsernames.clear();
-                    for(int i = 0; i < serverUserList.size(); i++){
+                    for (int i = 0; i < serverUserList.size(); i++) {
                         String s = serverUserList.get(i);
                         mUsernames.add(s);
                     }
@@ -161,6 +169,7 @@ public class ContactsFragment extends BaseFragment {
 
     }
 
+    //添加好友对话框
     private void showAddDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         final View dialogView = View.inflate(mContext, R.layout.view_addfri, null);
@@ -194,19 +203,15 @@ public class ContactsFragment extends BaseFragment {
                         } else {
                             ToastUtil.showToast(mContext, "不能添加自己为好友哦");
                         }
-
                     } else {
                         ToastUtil.showToast(mContext, "用户名必须大于三位哦");
                     }
-
                 } else {
                     ToastUtil.showToast(mContext, "输入框不能为空哦");
                 }
-
                 dialog.dismiss();
             }
         });
-
         builder.show();
     }
 
@@ -234,27 +239,54 @@ public class ContactsFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String friName = mContactsAdapter.getItem(position);
-                Intent intent = new Intent(mContext,FriDetailActivity.class);
-                intent.putExtra("friName",friName);
-                startActivityForResult(intent,0);
-
+                Intent intent = new Intent(mContext, FriDetailActivity.class);
+                intent.putExtra("friName", friName);
+                startActivityForResult(intent, ENTER_FRI_ACTIVITY);
             }
         });
 
+        //向上滑动时搜索框收起
+        mLv_contact.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
 
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if(firstVisibleItem>0){
+                    mSearchview.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode==0){
-            if(requestCode==2){
-                if(mContactsAdapter!=null){
+
+        if (requestCode == ENTER_FRI_ACTIVITY) {
+            switch (resultCode){
+                case DELETE:
+                case ADD_BLACK:
+                    if (mContactsAdapter != null) {
+                        String friName = data.getStringExtra("friName");
+                        mUsernames.remove(friName);
+                        mContactsAdapter.notifyDataSetChanged();
+                    }
+                    break;
+                case CREATE_CONVERSATION:
+                    //在chatfragment中创建会话
                     String friName = data.getStringExtra("friName");
-                    mUsernames.remove(friName);
-                    mContactsAdapter.notifyDataSetChanged();
-                }
+                    MainActivity activity = (MainActivity)getActivity();
+                    ChatFragment conversationFragment = activity.getConversationFragment();
+                    conversationFragment.createConversation();
+                    Intent intent = new Intent(mContext, SingleRoomActivity.class);
+                    intent.putExtra("userName",friName);
+                    startActivity(intent);
+                    break;
             }
+
         }
+
 
     }
 

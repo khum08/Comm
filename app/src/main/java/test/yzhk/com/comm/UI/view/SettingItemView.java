@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import test.yzhk.com.comm.R;
 
-import static test.yzhk.com.comm.R.id.tv_setting;
 
 
 /**
@@ -45,7 +44,7 @@ public class SettingItemView extends RelativeLayout {
     private void initView() {
         View.inflate(getContext(), R.layout.view_setting_item, this);
         ImageView setting_item = (ImageView) findViewById(R.id.iv_setting_item);
-        mTextView = (TextView) findViewById(tv_setting);
+        mTextView = (TextView) findViewById(R.id.tv_setting);
 
         setting_item.setImageResource(mIv_left);
         mTextView.setText(mTv_setting);
