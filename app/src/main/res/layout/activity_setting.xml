@@ -39,6 +39,17 @@
         android:layout_height="10dp"
         android:background="@color/white"/>
     <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_share"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        me:iv_left="@drawable/ic_share_teal_700_24dp"
+        me:settingName="分享"
+        />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/white"/>
+    <test.yzhk.com.comm.UI.view.SettingItemView
         android:id="@+id/item_writer_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

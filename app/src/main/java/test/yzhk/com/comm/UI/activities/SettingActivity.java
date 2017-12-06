@@ -27,6 +27,18 @@ public class SettingActivity extends AppCompatActivity {
         initPayWriter();
         initTextsize();
         initNightMode();
+        initShare();
+    }
+
+    //分享功能
+    private void initShare() {
+        SettingItemView item_share = (SettingItemView) findViewById(R.id.item_share);
+        item_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtil.showToast(SettingActivity.this,"这是分享功能");
+            }
+        });
     }
 
     //夜间操作
