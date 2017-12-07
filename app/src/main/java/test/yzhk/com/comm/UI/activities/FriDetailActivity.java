@@ -2,7 +2,6 @@ package test.yzhk.com.comm.UI.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,7 +14,7 @@ import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.view.SettingItemView;
 import test.yzhk.com.comm.utils.ToastUtil;
 
-public class FriDetailActivity extends AppCompatActivity {
+public class FriDetailActivity extends BaseActivity {
 
     private String mFriName;
     private static final int DELETE = 699;
@@ -86,7 +85,7 @@ public class FriDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //创建回话
                 Intent creatConversation = new Intent();
-                creatConversation.putExtra("friName",mFriName);
+                creatConversation.putExtra("o",mFriName);
                 setResult(CREATE_CONVERSATION,creatConversation);
                 finish();
             }

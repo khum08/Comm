@@ -7,12 +7,10 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -31,11 +29,13 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.baidu.location.BDLocation;
 import com.baidu.mapapi.SDKInitializer;
 import com.bumptech.glide.Glide;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMImageMessageBody;
+import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.exceptions.HyphenateException;
@@ -46,15 +46,20 @@ import java.util.List;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.dao.ConversationsDao;
+import test.yzhk.com.comm.utils.FileUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 import test.yzhk.com.comm.utils.UriUtil;
 
+import static com.hyphenate.chat.EMMessage.createImageSendMessage;
 
-public class SingleRoomActivity extends AppCompatActivity implements View.OnClickListener {
+
+public class SingleRoomActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String TAG = "SingleRoomActivity";
     private static final int GET_PHOTO = 2;
     private static final int OPEN_CAMERA = 3;
+    private static final int OPEN_VIDEO = 4;
+    private static final int GET_LOCATION = 147;
     private String mUserName;
     private ListView mLv_chat_content;
     private ChatAdapter mChatAdapter;
@@ -85,6 +90,10 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
         }
     };
     private SwipeRefreshLayout mSingleroon_refresh;
+    private Uri photoUri1;
+    private File mImgFile;
+    private Uri mVideoUri;
+    private File mVideoFile;
 
 
     @Override
@@ -109,14 +118,14 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
     //处理下拉刷新操作
     private void initRefresh() {
         mSingleroon_refresh = (SwipeRefreshLayout) findViewById(R.id.singleroon_refresh);
-        mSingleroon_refresh.setColorSchemeResources(R.color.red,R.color.colorPrimary,R.color.name);
+        mSingleroon_refresh.setColorSchemeResources(R.color.red, R.color.colorPrimary, R.color.name);
         mSingleroon_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Thread(){
+                new Thread() {
                     @Override
                     public void run() {
-                        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName,6);
+                        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName, 6);
                         if (newConversationlist != null) {
                             conversationlist = newConversationlist;
                             Log.e(TAG, "conversationlist的size为" + conversationlist.size());
@@ -323,7 +332,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
 
     //初始化聊天记录
     private void initConversation() {
-        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName,6);
+        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName, 6);
         if (newConversationlist != null) {
             conversationlist = newConversationlist;
             Log.e(TAG, "conversationlist的size为" + conversationlist.size());
@@ -374,7 +383,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
                 switch (item.getItemId()) {
                     case R.id.item_showall:
                         //显示所有聊天记录
-                        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName,-1);
+                        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName, -1);
                         newConversationlist = conversationlist;
                         mChatAdapter.notifyDataSetChanged();
                         break;
@@ -422,7 +431,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
                     }
                 });
         TextView textView = new TextView(this);
-        textView.setPadding(45,35,0,0);
+        textView.setPadding(45, 35, 0, 0);
         textView.setTextSize(20);
         textView.setText("确认加入黑名单吗？");
         textView.setTextColor(getResources().getColor(R.color.name));
@@ -483,6 +492,10 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
 
                     } else if (message.getType().equals(EMMessage.Type.VOICE)) {
                         viewHold.iv_me.setVisibility(View.VISIBLE);
+                    } else if (message.getType().equals(EMMessage.Type.LOCATION)){
+                        viewHold.tv_me.setVisibility(View.VISIBLE);
+                        EMLocationMessageBody body = (EMLocationMessageBody)message.getBody();
+                        viewHold.tv_me.setText(body.getAddress()+"\n经纬度："+body.getLatitude()+","+body.getLongitude());
                     }
                     viewHold.rl_root_me.setVisibility(View.VISIBLE);
                 }
@@ -500,6 +513,10 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
 
                     } else if (message.getType().equals(EMMessage.Type.VOICE)) {
                         viewHold.iv_other.setVisibility(View.VISIBLE);
+                    } else if (message.getType().equals(EMMessage.Type.LOCATION)){
+                        viewHold.tv_other.setVisibility(View.VISIBLE);
+                        EMLocationMessageBody body = (EMLocationMessageBody)message.getBody();
+                        viewHold.tv_other.setText(body.getAddress()+"\n经纬度："+body.getLatitude()+","+body.getLongitude());
                     }
                     viewHold.rl_root_other.setVisibility(View.VISIBLE);
                 }
@@ -579,12 +596,17 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_camera:
                 Intent openCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                tempUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "image.jpg"));
-                openCamera.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
+                mImgFile = FileUtil.createImgFile(this);
+                photoUri1 = Uri.fromFile(mImgFile);
+                openCamera.putExtra(MediaStore.EXTRA_OUTPUT, photoUri1);
                 startActivityForResult(openCamera, OPEN_CAMERA);
                 break;
             case R.id.tv_video:
-
+                Intent videoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                mVideoFile = FileUtil.createVideoFile(this);
+                mVideoUri = Uri.fromFile(mVideoFile);
+                videoIntent.putExtra(MediaStore.EXTRA_OUTPUT,mVideoUri);
+                startActivityForResult(videoIntent,OPEN_VIDEO);
                 break;
             case R.id.tv_location:
                 enterMapActivity();
@@ -612,7 +634,7 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
             switch (requestCode) {
                 case GET_PHOTO:
                     //加载图片
-                    EMMessage imageSendMessage = EMMessage.createImageSendMessage(UriUtil.getFileAbsolutePath(this, data.getData()), false, mUserName);
+                    EMMessage imageSendMessage = createImageSendMessage(UriUtil.getFileAbsolutePath(this, data.getData()), false, mUserName);
 //                    if (chatType == CHATTYPE_GROUP)
 //                       message.setChatType(ChatType.GroupChat);
 //                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
@@ -620,15 +642,31 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
                     mChatAdapter.notifyDataSetChanged();
                     break;
                 case OPEN_CAMERA:
-                    EMMessage imageSendMessage2 = EMMessage.createImageSendMessage(UriUtil.getFileAbsolutePath(this, tempUri), false, mUserName);
+
+                    EMMessage imageMsg
+                            = EMMessage.createImageSendMessage(mImgFile.getAbsolutePath(),false,mUserName);
+                    EMClient.getInstance().chatManager().sendMessage(imageMsg);
 //                    if (chatType == CHATTYPE_GROUP)
 //                       message.setChatType(ChatType.GroupChat);
 //                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
-                    conversationlist.add(imageSendMessage2);
+                    conversationlist.add(imageMsg);
                     mChatAdapter.notifyDataSetChanged();
+                    break;
+                case OPEN_VIDEO:
+                    EMMessage videoMsg = EMMessage.createVideoSendMessage(mVideoFile.getAbsolutePath(), mVideoFile.getAbsolutePath(), (int) mVideoFile.length(), mUserName);
+                    EMClient.getInstance().chatManager().sendMessage(videoMsg);
+                    ToastUtil.showToast(this,"视频发送成功");
+                    //// TODO: 2017/12/7
 
                     break;
-
+                case GET_LOCATION:
+                    BDLocation location = (BDLocation)data.getParcelableExtra("location");
+                    EMMessage message = EMMessage.createLocationSendMessage(location.getLatitude(), location.getLongitude()
+                            , location.getAddrStr(), mUserName);
+                    EMClient.getInstance().chatManager().sendMessage(message);
+                    conversationlist.add(message);
+                    mChatAdapter.notifyDataSetChanged();
+                    break;
             }
 
         }
@@ -636,10 +674,11 @@ public class SingleRoomActivity extends AppCompatActivity implements View.OnClic
 
     //进入千度地图页面
     private void enterMapActivity() {
-        Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
         //初始化地图sdk
         SDKInitializer.initialize(getApplicationContext());
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivityForResult(intent,GET_LOCATION);
+
     }
 
 }

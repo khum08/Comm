@@ -20,8 +20,8 @@
         <test.yzhk.com.comm.UI.view.CircleImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/ci_headerview"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_marginTop="@dimen/dp20"
             android:layout_weight="0.56"
             android:padding="@dimen/dp10"

@@ -21,7 +21,7 @@
         />
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="20dp"
         android:background="@color/white"/>
 
 
@@ -36,7 +36,7 @@
         />
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="14dp"
         android:background="@color/white"/>
     <test.yzhk.com.comm.UI.view.SettingItemView
         android:id="@+id/item_share"
@@ -47,7 +47,7 @@
         />
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="14dp"
         android:background="@color/white"/>
     <test.yzhk.com.comm.UI.view.SettingItemView
         android:id="@+id/item_writer_info"
@@ -65,14 +65,22 @@
         me:settingName="联系作者"
         />
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="@color/white"/>
+
     <test.yzhk.com.comm.UI.view.SettingItemView
         android:id="@+id/item_pay"
         me:iv_left="@drawable/ic_payment_teal_700_24dp"
         me:settingName="支持作者"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/white"/>
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_appout"
+        me:iv_left="@drawable/ic_all_out_teal_700_24dp"
+        me:settingName="退出应用"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />

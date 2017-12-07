@@ -2,7 +2,6 @@ package test.yzhk.com.comm.UI.activities;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -12,7 +11,7 @@ import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.view.SettingItemView;
 import test.yzhk.com.comm.utils.ToastUtil;
 
-public class SettingActivity extends AppCompatActivity {
+public class SettingActivity extends BaseActivity {
 
     private SettingItemView mItem_contact_setting;
     private SettingItemView mItem_writer_info;
@@ -28,8 +27,21 @@ public class SettingActivity extends AppCompatActivity {
         initTextsize();
         initNightMode();
         initShare();
-    }
+        initOut();
 
+    }
+    //退出应用功能
+    private void initOut() {
+        findViewById(R.id.item_appout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mApplication!=null){
+                    mApplication.closeApp();
+                }
+
+            }
+        });
+    }
     //分享功能
     private void initShare() {
         SettingItemView item_share = (SettingItemView) findViewById(R.id.item_share);

@@ -2,9 +2,9 @@ package test.yzhk.com.comm.UI.activities;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -25,13 +25,15 @@ import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
 
 import test.yzhk.com.comm.R;
+import test.yzhk.com.comm.utils.ToastUtil;
 
-public class MapActivity extends AppCompatActivity implements View.OnClickListener{
+public class MapActivity extends BaseActivity implements View.OnClickListener {
 
     public MapView mMapView;
     public BaiduMap mBaiduMap;
     public LocationClient mLocationClient = null;
     private MyLocationListener myListener = new MyLocationListener();
+    private BDLocation mCurrentLocation;
     //BDAbstractLocationListener为7.2版本新增的Abstract类型的监听接口
 //原有BDLocationListener接口暂时同步保留。具体介绍请参考后文中的说明
     public FloatingActionButton mFab_add;
@@ -41,10 +43,11 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
     private AnimatorSet addBillTranslate2;
     private AnimatorSet addBillTranslate3;
 
-    private int[] llId = new int[]{R.id.ll01,R.id.ll02,R.id.ll03};
+    private int[] llId = new int[]{R.id.ll01, R.id.ll02, R.id.ll03};
     private LinearLayout[] ll = new LinearLayout[llId.length];
-    private int[] fabId = new int[]{R.id.miniFab01,R.id.miniFab02,R.id.miniFab03};
+    private int[] fabId = new int[]{R.id.miniFab01, R.id.miniFab02, R.id.miniFab03};
     private FloatingActionButton[] fab = new FloatingActionButton[fabId.length];
+    private MapStatusUpdate mMapStatusUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,7 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
 //设置是否在stop的时候杀死这个进程，默认（建议）不杀死，即setIgnoreKillProcess(true)
         option.SetIgnoreCacheException(false);
 //可选，设置是否收集Crash信息，默认收集，即参数为false
+        option.setIsNeedAddress(true);//设置是否需要地址信息，默认不需要
         option.setEnableSimulateGps(false);
 //可选，设置是否需要过滤GPS仿真结果，默认需要，即参数为false
         mLocationClient.setLocOption(option);
@@ -110,18 +114,21 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
         setDefaultValues();
         bindEvents();
     }
-    private void setDefaultValues(){
-        addBillTranslate1 = (AnimatorSet) AnimatorInflater.loadAnimator(this,R.animator.add_bill_anim);
-        addBillTranslate2 = (AnimatorSet) AnimatorInflater.loadAnimator(this,R.animator.add_bill_anim);
-        addBillTranslate3 = (AnimatorSet) AnimatorInflater.loadAnimator(this,R.animator.add_bill_anim);
+
+    private void setDefaultValues() {
+        addBillTranslate1 = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.add_bill_anim);
+        addBillTranslate2 = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.add_bill_anim);
+        addBillTranslate3 = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.add_bill_anim);
     }
-    private void bindEvents(){
+
+    private void bindEvents() {
         mFab_add.setOnClickListener(this);
-        for (int i = 0;i < fabId.length; i++){
+        for (int i = 0; i < fabId.length; i++) {
             fab[i].setOnClickListener(this);
         }
     }
-    private void hideFABMenu(){
+
+    private void hideFABMenu() {
         rlAddBill.setVisibility(View.GONE);
         mFab_add.setImageResource(R.drawable.ic_more_horiz_white_24dp);
         isAdd = false;
@@ -153,46 +160,67 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab_add:
-                mFab_add.setImageResource(isAdd ? R.drawable.ic_more_horiz_white_24dp:R.drawable.ic_more_detail);
+                mFab_add.setImageResource(isAdd ? R.drawable.ic_more_horiz_white_24dp : R.drawable.ic_more_detail);
                 isAdd = !isAdd;
                 rlAddBill.setVisibility(isAdd ? View.VISIBLE : View.GONE);
                 if (isAdd) {
                     addBillTranslate1.setTarget(ll[0]);
                     addBillTranslate1.start();
                     addBillTranslate2.setTarget(ll[1]);
-                    addBillTranslate2.setStartDelay(150) ;
+                    addBillTranslate2.setStartDelay(150);
                     addBillTranslate2.start();
                     addBillTranslate3.setTarget(ll[2]);
-                    addBillTranslate3.setStartDelay(250) ;
+                    addBillTranslate3.setStartDelay(250);
                     addBillTranslate3.start();
                 }
                 break;
             case R.id.miniFab01:
+                //点击了发送
                 hideFABMenu();
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("location",mCurrentLocation);
+                intent.putExtras(bundle);
+                setResult(RESULT_OK, intent);
+                finish();
+                ToastUtil.showToast(this, mCurrentLocation.getAddress().address);
                 break;
             case R.id.miniFab02:
+                //点击了搜索
                 hideFABMenu();
                 break;
             case R.id.miniFab03:
+                //点击了我
                 hideFABMenu();
+                showMyLocation();
                 break;
             default:
+                hideFABMenu();
                 break;
         }
 
     }
 
+    private void showMyLocation() {
+        LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        mMapStatusUpdate = MapStatusUpdateFactory.newLatLng(latLng);
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
+    }
+
     public class MyLocationListener extends BDAbstractLocationListener {
 
         private boolean isFirstIn = true;
+
+
         @Override
         public void onReceiveLocation(BDLocation location) {
             //此处的BDLocation为定位结果信息类，通过它的各种get方法可获取定位相关的全部结果
             //以下只列举部分获取经纬度相关（常用）的结果信息
             //更多结果信息获取说明，请参照类参考中BDLocation类中的说明
+            mCurrentLocation = location;
             mBaiduMap = mMapView.getMap();
-            MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.zoomTo(16);
-            mBaiduMap.setMapStatus(mapStatusUpdate);
+            mMapStatusUpdate = MapStatusUpdateFactory.zoomTo(16);
+            mBaiduMap.setMapStatus(mMapStatusUpdate);
 
             mBaiduMap.setMyLocationEnabled(true);
             // 构造定位数据
@@ -210,11 +238,9 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
             MyLocationConfiguration config = new MyLocationConfiguration(MyLocationConfiguration.LocationMode.NORMAL, true, mCurrentMarker);
             mBaiduMap.setMyLocationConfiguration(config);
 
-            if (isFirstIn){
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mapStatusUpdate = MapStatusUpdateFactory.newLatLng(latLng);
-                mBaiduMap.setMapStatus(mapStatusUpdate);
-                isFirstIn=false;
+            if (isFirstIn) {
+                showMyLocation();
+                isFirstIn = false;
             }
         }
     }

@@ -3,7 +3,6 @@ package test.yzhk.com.comm.UI.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,7 +19,7 @@ import java.util.List;
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.utils.ToastUtil;
 
-public class BlackNumberActivity extends AppCompatActivity {
+public class BlackNumberActivity extends BaseActivity {
 
     private ListView mLv_blacklist;
     private List<String> mBlackListUsernames;

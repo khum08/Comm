@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Process;
+import android.support.v7.app.AppCompatActivity;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,18 +25,30 @@ public class MyApplication extends Application {
 
     private Context mContext;
     public boolean isInit = false;
+    public List<AppCompatActivity> list;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        list = new ArrayList<>();
         mContext = this;
         initEasemob();
 
     }
 
+    public void addActivity(AppCompatActivity activity){
+        list.add(activity);
+    }
+    public void closeApp(){
+        for(int i = 0; i < list.size(); i++){
+            AppCompatActivity activity = list.get(i);
+            if(activity!=null){
+                activity.finish();
+            }
+        }
+    }
 
-
-
+    //初始化环信sdk
     private void initEasemob() {
         int pid = Process.myPid();
         String appName = getAppName(pid);
@@ -44,7 +58,6 @@ public class MyApplication extends Application {
         if(isInit){
             return;
         }
-
 /**
  * SDK初始化的一些配置
  * 关于 EMOptions 可以参考官方的 API 文档

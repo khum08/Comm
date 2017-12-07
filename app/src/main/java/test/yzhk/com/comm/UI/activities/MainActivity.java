@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.flipboard.bottomsheet.BottomSheetLayout;
@@ -27,7 +26,7 @@ import test.yzhk.com.comm.UI.fragments.ContactsFragment;
 import test.yzhk.com.comm.UI.fragments.SelfFragment;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
 
     private int lastShowFragment = 0;

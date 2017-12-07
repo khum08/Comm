@@ -3,7 +3,6 @@ package test.yzhk.com.comm.UI.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,7 +17,7 @@ import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.utils.PrefUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 
-public class NickSigningActivity extends AppCompatActivity {
+public class NickSigningActivity extends BaseActivity {
 
     private EditText mNickName;
     private Button mButton;
