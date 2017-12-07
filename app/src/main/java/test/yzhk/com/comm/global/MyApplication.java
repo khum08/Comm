@@ -80,7 +80,7 @@ public class MyApplication extends Application {
         // 设置是否自动接收加群邀请，如果设置了当收到群邀请会自动同意加入
         options.setAutoAcceptGroupInvitation(true);
         // 设置（主动或被动）退出群组时，是否删除群聊聊天记录
-        options.setDeleteMessagesAsExitGroup(false);
+        options.setDeleteMessagesAsExitGroup(true);
         // 设置是否允许聊天室的Owner 离开并删除聊天室的会话
         options.allowChatroomOwnerLeave(true);
         // 设置google GCM推送id，国内可以不用设置

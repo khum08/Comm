@@ -23,13 +23,16 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import test.yzhk.com.comm.R;
+import test.yzhk.com.comm.UI.activities.ChatRoomMakerActivity;
+import test.yzhk.com.comm.UI.activities.GroupMakerActivity;
 import test.yzhk.com.comm.UI.activities.SingleRoomActivity;
 import test.yzhk.com.comm.dao.ConversationsDao;
 import test.yzhk.com.comm.engine.ParseConversations;
 import test.yzhk.com.comm.utils.DateUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 
-import static test.yzhk.com.comm.R.id.item_contact;
+import static test.yzhk.com.comm.R.id.item_chatroom;
+import static test.yzhk.com.comm.R.id.item_group;
 import static test.yzhk.com.comm.R.id.item_paymoney;
 import static test.yzhk.com.comm.R.id.item_scan;
 
@@ -90,8 +93,14 @@ public class ChatFragment extends BaseFragment {
                     case item_paymoney:
                         ToastUtil.showToast(mContext,"显示钱包页面");
                         break;
-                    case item_contact:
-                        ToastUtil.showToast(mContext,"显示聊天界面");
+                    case item_group:
+                        Intent groupMaker = new Intent(mContext, GroupMakerActivity.class);
+                        startActivity(groupMaker);
+                        break;
+                    case item_chatroom:
+                        Intent chatRoomMaker = new Intent(mContext, ChatRoomMakerActivity.class);
+                        startActivity(chatRoomMaker);
+                        ToastUtil.showToast(mContext,"显示创建聊天室界面");
                         break;
                 }
 
@@ -195,7 +204,6 @@ public class ChatFragment extends BaseFragment {
                         ToastUtil.showToast(mContext,"聊天标记为已读");
                         break;
                 }
-
 
                 return false;
             }

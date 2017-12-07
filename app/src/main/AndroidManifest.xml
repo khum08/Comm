@@ -111,6 +111,10 @@
         </activity>
         <activity android:name=".UI.activities.NickSigningActivity">
         </activity>
+        <activity android:name=".UI.activities.GroupMakerActivity">
+        </activity>
+        <activity android:name=".UI.activities.ChatRoomMakerActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -43,17 +43,21 @@ public class ContactsFragment extends BaseFragment {
 
     private View mContactsView;
     private ListView mLv_contact;
-
+    //adapter的数据
     private List<String> mUsernames = new ArrayList<>();
+    //服务器端好友列表
     private List<String> serverUserList;
+    //本地数据中黑名单的列表
+    private List<String> mBlacklist;
     private TextView tv_title;
     private TextView tv_isloading;
     private ImageView iv_add;
-    private contactsAdapter mContactsAdapter;
+    private ContactsAdapter mContactsAdapter;
     private static final int ENTER_FRI_ACTIVITY = 916;
     private static final int DELETE = 699;
     private static final int ADD_BLACK = 818;
     private static final int CREATE_CONVERSATION = 899;
+    private static final int GO_BLACK = 240;
 
     public Handler mHandler = new Handler() {
 
@@ -62,7 +66,7 @@ public class ContactsFragment extends BaseFragment {
             tv_isloading.setVisibility(View.GONE);
             mLv_contact.setVisibility(View.VISIBLE);
 
-            mContactsAdapter = new contactsAdapter();
+            mContactsAdapter = new ContactsAdapter();
             mLv_contact.setAdapter(mContactsAdapter);
         }
     };
@@ -112,7 +116,7 @@ public class ContactsFragment extends BaseFragment {
                                 break;
                             case R.id.tv_blacknum:
                                 Intent intent = new Intent(mContext, BlackNumberActivity.class);
-                                startActivity(intent);
+                                startActivityForResult(intent,GO_BLACK);
                                 break;
                             case R.id.tv_nothing:
                                 ToastUtil.showToast(mContext, "作者真的很帅");
@@ -220,14 +224,20 @@ public class ContactsFragment extends BaseFragment {
     public void initData() {
 
         new Thread() {
+
             @Override
             public void run() {
                 try {
                     serverUserList = EMClient.getInstance().contactManager().getAllContactsFromServer();
+
                     if (serverUserList != null && serverUserList.size() == 0) {
-                        ToastUtil.showToast(mContext, "暂时还没有好友哦");
+                        ToastUtil.showToast(mContext, "暂时没有好友哦");
                     }
                     mUsernames.addAll(serverUserList);
+                    mBlacklist = EMClient.getInstance().contactManager().getBlackListUsernames();
+                    if(mBlacklist!=null){
+                        mUsernames.removeAll(mBlacklist);
+                    }
                     mHandler.sendEmptyMessage(0);
                 } catch (HyphenateException e) {
                     e.printStackTrace();
@@ -285,12 +295,33 @@ public class ContactsFragment extends BaseFragment {
                     break;
             }
 
+        }else if (requestCode == GO_BLACK){
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        serverUserList = EMClient.getInstance().contactManager().getAllContactsFromServer();
+                        if (serverUserList != null && serverUserList.size() == 0) {
+                            ToastUtil.showToast(mContext, "暂时没有好友哦");
+                        }
+                        mUsernames.clear();
+                        mUsernames.addAll(serverUserList);
+                        mBlacklist = EMClient.getInstance().contactManager().getBlackListUsernames();
+                        if(mBlacklist!=null){
+                            mUsernames.removeAll(mBlacklist);
+                        }
+                        mHandler.sendEmptyMessage(0);
+                    } catch (HyphenateException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
         }
 
 
     }
 
-    class contactsAdapter extends BaseAdapter {
+    class ContactsAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {

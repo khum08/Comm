@@ -27,5 +27,17 @@
         android:layout_marginLeft="@dimen/dp30"
         android:layout_centerVertical="true"
         />
+    <CheckBox
+        android:id="@+id/cb_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_contact_name"
+        android:layout_alignBottom="@+id/tv_contact_name"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:padding="@dimen/dp8"
+        android:visibility="gone"
+        android:layout_marginRight="@dimen/dp10"
+        />
 
 </RelativeLayout>
