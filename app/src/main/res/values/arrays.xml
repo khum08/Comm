@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="group_type">
+        <item>公开群，任何人都能加入此群</item>
+        <item>公开群，只能群主邀请或主动申请</item>
+        <item>私有群，只有群主可以邀请人</item>
+        <item>私有群，群成员也能邀请人进群</item>
+    </string-array>
+</resources>

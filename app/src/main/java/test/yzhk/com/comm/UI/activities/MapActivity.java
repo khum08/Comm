@@ -2,12 +2,21 @@ package test.yzhk.com.comm.UI.activities;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.baidu.location.BDAbstractLocationListener;
@@ -48,6 +57,8 @@ public class MapActivity extends BaseActivity implements View.OnClickListener {
     private int[] fabId = new int[]{R.id.miniFab01, R.id.miniFab02, R.id.miniFab03};
     private FloatingActionButton[] fab = new FloatingActionButton[fabId.length];
     private MapStatusUpdate mMapStatusUpdate;
+    private MyLocationConfiguration mConfig;
+    private BitmapDescriptor mCurrentMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +71,7 @@ public class MapActivity extends BaseActivity implements View.OnClickListener {
     }
 
 
+    //初始化sdk设置
     private void initSDK() {
         mLocationClient = new LocationClient(getApplicationContext());
         //声明LocationClient类
@@ -188,6 +200,7 @@ public class MapActivity extends BaseActivity implements View.OnClickListener {
             case R.id.miniFab02:
                 //点击了搜索
                 hideFABMenu();
+                showSearchView();
                 break;
             case R.id.miniFab03:
                 //点击了我
@@ -201,7 +214,49 @@ public class MapActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    //点击搜索后，弹出搜索对话框
+    private void showSearchView() {
+        //方法二
+        final Dialog dialog = new Dialog(this,R.style.searchdialog);
+        View searchview = View.inflate(this, R.layout.view_search, null);
+        dialog.setContentView(searchview);
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode==KeyEvent.KEYCODE_MENU)
+                dialog.dismiss();
+                return false;
+            }
+        });
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.TOP);
+        dialog.show();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchview,InputMethodManager.SHOW_FORCED);
+        SearchView map_search = (SearchView) searchview.findViewById(R.id.map_search);
+        map_search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(TextUtils.isEmpty(query)){
+                }else{
+                    //// TODO: 2017/12/8 定位操作
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    //点击 我 后 重新显示我的位置
     private void showMyLocation() {
+        mMapStatusUpdate = MapStatusUpdateFactory.zoomTo(16);
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
+        mBaiduMap.setMyLocationConfiguration(mConfig);
+
         LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         mMapStatusUpdate = MapStatusUpdateFactory.newLatLng(latLng);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
@@ -233,10 +288,10 @@ public class MapActivity extends BaseActivity implements View.OnClickListener {
             // 设置定位数据
             mBaiduMap.setMyLocationData(locData);
             // 设置定位图层的配置（定位模式，是否允许方向信息，用户自定义定位图标）
-            BitmapDescriptor mCurrentMarker = BitmapDescriptorFactory
+            mCurrentMarker = BitmapDescriptorFactory
                     .fromResource(R.drawable.ic_location_on_pink_800_18dp);
-            MyLocationConfiguration config = new MyLocationConfiguration(MyLocationConfiguration.LocationMode.NORMAL, true, mCurrentMarker);
-            mBaiduMap.setMyLocationConfiguration(config);
+            mConfig = new MyLocationConfiguration(MyLocationConfiguration.LocationMode.NORMAL, true, mCurrentMarker);
+            mBaiduMap.setMyLocationConfiguration(mConfig);
 
             if (isFirstIn) {
                 showMyLocation();

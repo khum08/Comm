@@ -34,6 +34,7 @@ import com.baidu.mapapi.SDKInitializer;
 import com.bumptech.glide.Glide;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
@@ -45,7 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import test.yzhk.com.comm.R;
-import test.yzhk.com.comm.dao.ConversationsDao;
 import test.yzhk.com.comm.utils.FileUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 import test.yzhk.com.comm.utils.UriUtil;
@@ -60,6 +60,8 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
     private static final int OPEN_CAMERA = 3;
     private static final int OPEN_VIDEO = 4;
     private static final int GET_LOCATION = 147;
+    private static final int GET_DATA = 186;
+    private static final int REFRESH_DATA = 917;
     private String mUserName;
     private ListView mLv_chat_content;
     private ChatAdapter mChatAdapter;
@@ -68,6 +70,8 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
 
     public List<EMMessage> conversationlist = new ArrayList<>();
+    private List<EMMessage> showMessages = new ArrayList<>();
+    private List<EMMessage> newMessages = new ArrayList<>();
     private ImageView mIv_add;
     private EditText mEt_chatcontent;
 
@@ -83,9 +87,12 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 0:
+                case REFRESH_DATA:
                     mChatAdapter.notifyDataSetChanged();
                     break;
+                case GET_DATA:
+                    mChatAdapter = new ChatAdapter();
+                    mLv_chat_content.setAdapter(mChatAdapter);
             }
         }
     };
@@ -94,6 +101,10 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
     private File mImgFile;
     private Uri mVideoUri;
     private File mVideoFile;
+    private EMConversation mConversation;
+    //聊天消息列表
+    private List<EMMessage> mAllMessages;
+    private long mCurrentTimeMillis;
 
 
     @Override
@@ -122,23 +133,56 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
         mSingleroon_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                mCurrentTimeMillis = System.currentTimeMillis();
                 new Thread() {
                     @Override
                     public void run() {
-                        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName, 6);
-                        if (newConversationlist != null) {
-                            conversationlist = newConversationlist;
-                            Log.e(TAG, "conversationlist的size为" + conversationlist.size());
+                        //分页加载数据,每次加载20条
+                        try {
+                            EMConversation conversation = EMClient.getInstance().chatManager().getConversation(mUserName);
+                            if(showMessages.size()<conversation.getAllMsgCount()){
+                                showMessages.clear();
+                                List<EMMessage> allMessages = conversation.getAllMessages();
+                                showMessages.addAll(allMessages);
+                            }else{
+                                EMMessage lastmessage = showMessages.get(showMessages.size() - 1);
+                                List<EMMessage> messages = conversation.loadMoreMsgFromDB(lastmessage.getMsgId(), 20);
+                                if(messages!=null){
+                                    showMessages.addAll(messages);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        mHandler.sendEmptyMessage(0);
-                        mSingleroon_refresh.setRefreshing(false);
+
+                        //保证刷新不会太快
+                        long newTime = System.currentTimeMillis();
+                        if(newTime-mCurrentTimeMillis>1500){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mSingleroon_refresh.setRefreshing(false);
+                                }
+                            });
+                        }else{
+                            try {
+                                Thread.sleep(1500-(newTime-mCurrentTimeMillis));
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mSingleroon_refresh.setRefreshing(false);
+                                }
+                            });
+                        }
+                        mHandler.sendEmptyMessage(REFRESH_DATA);
                     }
                 }.start();
-
             }
         });
     }
-
 
     //初始化底部聊天输入控件
     private void startChat() {
@@ -158,7 +202,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
         mEt_chatcontent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mView_more_action.setVisibility(View.GONE);
             }
         });
         mEt_chatcontent.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -202,13 +246,18 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
                     mEt_chatcontent.setText("");
 
                     //创建一条文本消息，text为消息文字内容，mUserName为对方用户或者群聊的id，异步发送消息
-                    EMMessage message = EMMessage.createTxtSendMessage(text, mUserName);
-                    EMClient.getInstance().chatManager().sendMessage(message);
+                    final EMMessage message = EMMessage.createTxtSendMessage(text, mUserName);
+                    newMessages.add(message);
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            EMClient.getInstance().chatManager().sendMessage(message);
+                        }
+                    }.start();
 
                     //集合变化
-                    conversationlist.add(message);
+                    showMessages.add(message);
                     mChatAdapter.notifyDataSetChanged();
-
                 }
             }
         });
@@ -279,9 +328,9 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
         public void onMessageReceived(List<EMMessage> messages) {
             //收到消息
             Log.e(TAG, "收到了新消息 onMessageReceived");
-            conversationlist.addAll(messages);
-            mHandler.sendEmptyMessage(0);
-
+            showMessages.addAll(messages);
+            newMessages.addAll(messages);
+            mHandler.sendEmptyMessage(REFRESH_DATA);
         }
 
         @Override
@@ -306,6 +355,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
         @Override
         public void onMessageRecalled(List<EMMessage> messages) {
             //消息被撤回
+            ToastUtil.showToast(SingleRoomActivity.this, "对方企图撤回一条消息，哈哈哈哈");
         }
 
         @Override
@@ -318,29 +368,42 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
+        new Thread(){
+            @Override
+            public void run() {
+                EMClient.getInstance().chatManager().removeMessageListener(msgListener);
+                EMClient.getInstance().chatManager().importMessages(newMessages);
+            }
+        }.start();
     }
 
 
     public void initListView() {
-
         mLv_chat_content = (ListView) findViewById(R.id.lv_chat_content);
-        initConversation();
-        mChatAdapter = new ChatAdapter();
-        mLv_chat_content.setAdapter(mChatAdapter);
-    }
+        new Thread() {
+            @Override
+            public void run() {
+                //初始化聊天记录
+                mConversation = EMClient.getInstance().chatManager().getConversation(mUserName);
+                if (mConversation != null) {
+                    mAllMessages = mConversation.getAllMessages();
+                    Log.e(TAG,"mAllMessages的长度为："+mAllMessages.size());
+                    if (mAllMessages != null) {
+                        if (mAllMessages.size() >= 4) {
+                            for (int i = 0; i < 4; i++) {
+                                showMessages.add(mAllMessages.get(i));
+                            }
+                        } else {
+                            showMessages.addAll(mAllMessages);
+                        }
+                    }
+                }
+                Log.e(TAG,"showMessages的长度为："+showMessages.size());
+                mHandler.sendEmptyMessage(GET_DATA);
+            }
+        }.start();
 
-    //初始化聊天记录
-    private void initConversation() {
-        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName, 6);
-        if (newConversationlist != null) {
-            conversationlist = newConversationlist;
-            Log.e(TAG, "conversationlist的size为" + conversationlist.size());
-        }
-        mChatAdapter = new ChatAdapter();
-        mLv_chat_content.setAdapter(mChatAdapter);
     }
-
 
     //初始化titlebar
     private void initTitle() {
@@ -381,23 +444,22 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.item_showall:
-                        //显示所有聊天记录
-                        List<EMMessage> newConversationlist = ConversationsDao.getConversation(SingleRoomActivity.this, mUserName, -1);
-                        newConversationlist = conversationlist;
-                        mChatAdapter.notifyDataSetChanged();
-                        break;
                     case R.id.item_clear:
                         conversationlist.clear();
                         mChatAdapter.notifyDataSetChanged();
                         //删除聊天记录
-                        EMClient.getInstance().chatManager().deleteConversation(mUserName, true);
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                EMClient.getInstance().chatManager().deleteConversation(mUserName, true);
+                            }
+                        }.start();
                         break;
                     case R.id.item_info:
                         //查看好友信息
                         Intent intent = new Intent(SingleRoomActivity.this, FriDetailActivity.class);
                         intent.putExtra("friName", mUserName);
-                        startActivityForResult(intent, 0);
+                        startActivity(intent);
                         break;
                     case R.id.item_add2black:
                         //加入黑名单
@@ -421,13 +483,20 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
                 .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            EMClient.getInstance().contactManager().addUserToBlackList(mUserName, true);
-                            ToastUtil.showToast(SingleRoomActivity.this, "加入黑名单成功");
-                        } catch (HyphenateException e) {
-                            e.printStackTrace();
-                            ToastUtil.showToast(SingleRoomActivity.this, "加入黑名单失败");
-                        }
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    EMClient.getInstance().contactManager().addUserToBlackList(mUserName, true);
+                                    ToastUtil.showToast(SingleRoomActivity.this, "添加成功，对象已接收不到您的消息");
+                                    //// TODO: 2017/12/8 contactfragment 的数据需更新
+                                } catch (HyphenateException e) {
+                                    e.printStackTrace();
+                                    ToastUtil.showToast(SingleRoomActivity.this, "加入黑名单失败");
+                                }
+                            }
+                        }.start();
+
                     }
                 });
         TextView textView = new TextView(this);
@@ -444,11 +513,11 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
         @Override
         public int getCount() {
-            return conversationlist.size();
+            return showMessages.size();
         }
 
         public EMMessage getItem(int position) {
-            return conversationlist.get(position);
+            return showMessages.get(position);
         }
 
         @Override
@@ -492,10 +561,10 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
                     } else if (message.getType().equals(EMMessage.Type.VOICE)) {
                         viewHold.iv_me.setVisibility(View.VISIBLE);
-                    } else if (message.getType().equals(EMMessage.Type.LOCATION)){
+                    } else if (message.getType().equals(EMMessage.Type.LOCATION)) {
                         viewHold.tv_me.setVisibility(View.VISIBLE);
-                        EMLocationMessageBody body = (EMLocationMessageBody)message.getBody();
-                        viewHold.tv_me.setText(body.getAddress()+"\n经纬度："+body.getLatitude()+","+body.getLongitude());
+                        EMLocationMessageBody body = (EMLocationMessageBody) message.getBody();
+                        viewHold.tv_me.setText(body.getAddress() + "\n经纬度：" + body.getLatitude() + "," + body.getLongitude());
                     }
                     viewHold.rl_root_me.setVisibility(View.VISIBLE);
                 }
@@ -513,10 +582,10 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
                     } else if (message.getType().equals(EMMessage.Type.VOICE)) {
                         viewHold.iv_other.setVisibility(View.VISIBLE);
-                    } else if (message.getType().equals(EMMessage.Type.LOCATION)){
+                    } else if (message.getType().equals(EMMessage.Type.LOCATION)) {
                         viewHold.tv_other.setVisibility(View.VISIBLE);
-                        EMLocationMessageBody body = (EMLocationMessageBody)message.getBody();
-                        viewHold.tv_other.setText(body.getAddress()+"\n经纬度："+body.getLatitude()+","+body.getLongitude());
+                        EMLocationMessageBody body = (EMLocationMessageBody) message.getBody();
+                        viewHold.tv_other.setText(body.getAddress() + "\n经纬度：" + body.getLatitude() + "," + body.getLongitude());
                     }
                     viewHold.rl_root_other.setVisibility(View.VISIBLE);
                 }
@@ -605,8 +674,8 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
                 Intent videoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
                 mVideoFile = FileUtil.createVideoFile(this);
                 mVideoUri = Uri.fromFile(mVideoFile);
-                videoIntent.putExtra(MediaStore.EXTRA_OUTPUT,mVideoUri);
-                startActivityForResult(videoIntent,OPEN_VIDEO);
+                videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mVideoUri);
+                startActivityForResult(videoIntent, OPEN_VIDEO);
                 break;
             case R.id.tv_location:
                 enterMapActivity();
@@ -644,7 +713,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
                 case OPEN_CAMERA:
 
                     EMMessage imageMsg
-                            = EMMessage.createImageSendMessage(mImgFile.getAbsolutePath(),false,mUserName);
+                            = EMMessage.createImageSendMessage(mImgFile.getAbsolutePath(), false, mUserName);
                     EMClient.getInstance().chatManager().sendMessage(imageMsg);
 //                    if (chatType == CHATTYPE_GROUP)
 //                       message.setChatType(ChatType.GroupChat);
@@ -655,12 +724,12 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
                 case OPEN_VIDEO:
                     EMMessage videoMsg = EMMessage.createVideoSendMessage(mVideoFile.getAbsolutePath(), mVideoFile.getAbsolutePath(), (int) mVideoFile.length(), mUserName);
                     EMClient.getInstance().chatManager().sendMessage(videoMsg);
-                    ToastUtil.showToast(this,"视频发送成功");
+                    ToastUtil.showToast(this, "视频发送成功");
                     //// TODO: 2017/12/7
 
                     break;
                 case GET_LOCATION:
-                    BDLocation location = (BDLocation)data.getParcelableExtra("location");
+                    BDLocation location = (BDLocation) data.getParcelableExtra("location");
                     EMMessage message = EMMessage.createLocationSendMessage(location.getLatitude(), location.getLongitude()
                             , location.getAddrStr(), mUserName);
                     EMClient.getInstance().chatManager().sendMessage(message);
@@ -677,7 +746,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
         //初始化地图sdk
         SDKInitializer.initialize(getApplicationContext());
         Intent intent = new Intent(this, MapActivity.class);
-        startActivityForResult(intent,GET_LOCATION);
+        startActivityForResult(intent, GET_LOCATION);
 
     }
 

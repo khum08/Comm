@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="test.yzhk.com.comm.UI.activities.GroupInfoActivity">
+
+    <include layout="@layout/custom_actionbar"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_owner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="群主"
+                />
+
+            <GridView
+                android:id="@+id/gv_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:numColumns="5">
+
+            </GridView>
+
+            <TextView
+                android:id="@+id/tv_admin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="管理员"/>
+            <TextView
+                android:id="@+id/tv_groupid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="群名称"/>
+            <TextView
+                android:id="@+id/tv_groupdesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="群组描述"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

@@ -73,6 +73,13 @@
         me:iv_left="@drawable/ic_attach_money_grey_600_24dp"
         me:settingName="钱包"
         />
+    <test.yzhk.com.comm.UI.view.SettingItemView
+        android:id="@+id/item_lifeservice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        me:iv_left="@drawable/ic_format_list_bulleted_grey_600_24dp"
+        me:settingName="生活服务"
+        />
 
     <ImageView
         android:layout_width="match_parent"
@@ -86,13 +93,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
-    <test.yzhk.com.comm.UI.view.SettingItemView
-        android:id="@+id/item_register_login"
-        me:iv_left="@drawable/ic_delete"
-        me:settingName="注册或登录"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+
 
     <ImageView
         android:layout_width="match_parent"

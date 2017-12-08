@@ -24,66 +24,47 @@
             android:id="@+id/tv_confirm_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:padding="@dimen/dp10"
+            android:layout_marginRight="@dimen/dp8"
             android:text="确定"
             android:textColor="@color/white"
-            android:textSize="@dimen/dp20"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
+            android:textSize="@dimen/dp20"/>
     </RelativeLayout>
-    <!--/**
-    * 创建群组
-    * @param groupName 群组名称
-    * @param desc 群组简介
-    * @param allMembers 群组初始成员，如果只有自己传空数组即可
-    * @param reason 邀请成员加入的reason
-    * @param option 群组类型选项，可以设置群组最大用户数(默认200)及群组类型@see {@link EMGroupStyle}
-    *               option.inviteNeedConfirm表示邀请对方进群是否需要对方同意，默认是需要用户同意才能加群的。
-    *               option.extField创建群时可以为群组设定扩展字段，方便个性化订制。
-    * @return 创建好的group
-    * @throws HyphenateException
-    option里的GroupStyle分别为：
 
-EMGroupStylePrivateOnlyOwnerInvite——私有群，只有群主可以邀请人；
-EMGroupStylePrivateMemberCanInvite——私有群，群成员也能邀请人进群；
-EMGroupStylePublicJoinNeedApproval——公开群，加入此群除了群主邀请，只能通过申请加入此群；
-EMGroupStylePublicOpenJoin ——公开群，任何人都能加入此群。
-    */-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:paddingLeft="@dimen/dp16"
-        android:paddingRight="@dimen/dp16"
-        android:layout_height="wrap_content">
-
-    </LinearLayout>
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
         <LinearLayout
-            android:layout_marginTop="@dimen/dp16"
-            android:orientation="vertical"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp8"
+            android:orientation="vertical"
             android:paddingLeft="@dimen/dp12"
-            android:paddingRight="@dimen/dp12"
-            android:layout_height="wrap_content">
+            android:paddingRight="@dimen/dp12">
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 >
 
-            <AutoCompleteTextView
-                android:id="@+id/tv_group_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="群组名称："
-                android:imeOptions="actionNext"
-                android:inputType="text"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textSize="@dimen/dp16"/>
+                <AutoCompleteTextView
+                    android:id="@+id/tv_group_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="群组名称："
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textSize="@dimen/dp16"/>
 
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,79 +75,97 @@ EMGroupStylePublicOpenJoin ——公开群，任何人都能加入此群。
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="群组描述："
-                    android:textSize="@dimen/dp16"
                     android:imeOptions="actionNext"
                     android:inputType="text"
                     android:maxLines="2"
-                    android:singleLine="true"/>
+                    android:singleLine="true"
+                    android:textSize="@dimen/dp16"/>
 
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
     </ScrollView>
 
 
-
     <RelativeLayout
-        android:paddingLeft="@dimen/dp16"
-        android:paddingRight="@dimen/dp16"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/dp10"
+        android:paddingTop="@dimen/dp10"
+        android:paddingLeft="@dimen/dp16"
+        android:paddingRight="@dimen/dp16">
 
         <TextView
             android:id="@+id/tv_type_group"
             android:layout_width="wrap_content"
-            android:textSize="@dimen/dp16"
             android:layout_height="31dp"
-            android:text="群组类型："/>
+            android:text="群组类型："
+            android:textSize="@dimen/dp16"/>
 
-        <RadioGroup
-            android:id="@+id/rg_group"
+        <Spinner
+            android:id="@+id/spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_type_group"
+            android:background="@color/white"
+            android:entries="@array/group_type"
+            android:textSize="@dimen/dp14"
+            >
 
-            android:layout_toRightOf="@id/tv_type_group">
+        </Spinner>
 
-            <android.support.v7.widget.AppCompatRadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/dp16"
-                android:text="私有群，只有群主可以邀请人"/>
-
-            <android.support.v7.widget.AppCompatRadioButton
-                android:id="@+id/appCompatRadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="公开群，任何人都能加入此群"
-                android:textSize="@dimen/dp16"/>
-
-            <android.support.v7.widget.AppCompatRadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/dp16"
-                android:text="私有群，群成员也能邀请人进群"/>
-
-            <android.support.v7.widget.AppCompatRadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/dp16"
-                android:text="公开群，只能群主邀请或主动申请"/>
-
-        </RadioGroup>
     </RelativeLayout>
-
-    <ListView
-        android:layout_marginTop="@dimen/dp10"
-        android:id="@+id/lv_group"
-        android:visibility="gone"
+    <LinearLayout
+        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp16"
+        android:paddingRight="@dimen/dp16"
+        android:paddingBottom="@dimen/dp8"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:textSize="@dimen/dp16"
+            android:text="选择群成员："/>
+
+        <TextView
+            android:id="@+id/tv_selected"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:text="(8/20)"
+            android:textSize="@dimen/dp16"/>
+
+        <TextView
+            android:id="@+id/tv_selectall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全选/全不选"
+            android:textColor="@color/white"
+            android:padding="@dimen/dp8"
+            android:background="@drawable/button_background"
+            />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tv_group_isloading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
         android:gravity="center"
-        android:text="联系人"/>
+        android:text="联系人"
+        android:visibility="visible"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#666"/>
+    <ListView
+        android:id="@+id/lv_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
 </LinearLayout>

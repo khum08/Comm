@@ -85,7 +85,7 @@ public class FriDetailActivity extends BaseActivity {
             public void onClick(View v) {
                 //创建回话
                 Intent creatConversation = new Intent();
-                creatConversation.putExtra("o",mFriName);
+                creatConversation.putExtra("friName",mFriName);
                 setResult(CREATE_CONVERSATION,creatConversation);
                 finish();
             }

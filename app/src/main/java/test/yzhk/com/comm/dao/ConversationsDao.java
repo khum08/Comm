@@ -23,6 +23,7 @@ public class ConversationsDao {
 
     public static List<EMMessage> getConversation(Context context, String username,int size) {
 
+
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
         if (conversation != null) {
             conversation.markAllMessagesAsRead();

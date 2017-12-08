@@ -109,12 +109,12 @@
         <activity android:name=".UI.activities.MapActivity"/>
         <activity android:name=".UI.activities.SettingActivity">
         </activity>
-        <activity android:name=".UI.activities.NickSigningActivity">
-        </activity>
-        <activity android:name=".UI.activities.GroupMakerActivity">
-        </activity>
-        <activity android:name=".UI.activities.ChatRoomMakerActivity">
-        </activity>
+        <activity android:name=".UI.activities.NickSigningActivity"/>
+        <activity android:name=".UI.activities.GroupMakerActivity"/>
+        <activity android:name=".UI.activities.ChatRoomMakerActivity"/>
+        <activity android:name=".UI.activities.ServiceActivity"/>
+        <activity android:name=".UI.activities.GroupActivity"/>
+        <activity android:name=".UI.activities.GroupInfoActivity"/>
     </application>
 
 </manifest>

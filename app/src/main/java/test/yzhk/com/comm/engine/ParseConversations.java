@@ -1,7 +1,5 @@
 package test.yzhk.com.comm.engine;
 
-import android.util.Log;
-
 import com.hyphenate.chat.EMConversation;
 
 import java.util.HashMap;
@@ -25,7 +23,6 @@ public class ParseConversations {
     public static Map<String ,EMConversation> parse(Map<String, EMConversation> allConversations){
 
         if(allConversations!=null){
-            Log.e(TAG,"有会话存在");
             Map<String ,EMConversation> map = new HashMap<>();
             for (Map.Entry entry:allConversations.entrySet()) {
                 String conversationId = (String) entry.getKey();

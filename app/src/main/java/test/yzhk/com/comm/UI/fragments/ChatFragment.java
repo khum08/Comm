@@ -1,6 +1,8 @@
 package test.yzhk.com.comm.UI.fragments;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,20 +16,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.ChatRoomMakerActivity;
 import test.yzhk.com.comm.UI.activities.GroupMakerActivity;
 import test.yzhk.com.comm.UI.activities.SingleRoomActivity;
-import test.yzhk.com.comm.dao.ConversationsDao;
-import test.yzhk.com.comm.engine.ParseConversations;
 import test.yzhk.com.comm.utils.DateUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 
@@ -42,24 +44,32 @@ import static test.yzhk.com.comm.R.id.item_scan;
 
 public class ChatFragment extends BaseFragment {
 
+    private static final int GET_DATA = 644;
+    private static final int REFRESH_DATA = 61;
     public View mChatView;
-    public Map<String, EMConversation> mMap;
-    public ArrayList<String> mKeyList;
     private static final String TAG = "ChatFragment";
     private ConversationAdapter mAdapter;
 
     private ListView mLv_chat;
     private SwipeRefreshLayout mSwipeRefreshView;
-    public Handler mHandler = new Handler(){
+    private List<String> mConversationList;
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 0:
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case GET_DATA:
+                    mAdapter = new ConversationAdapter();
+                    mLv_chat.setAdapter(mAdapter);
+                    break;
+                case REFRESH_DATA:
                     mAdapter.notifyDataSetChanged();
                     break;
             }
         }
     };
+    private Map<String, EMConversation> mAllConversations;
+    private long mCurrentTimeMillis;
 
     @Override
     public View initView() {
@@ -86,12 +96,12 @@ public class ChatFragment extends BaseFragment {
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case item_scan:
-                        ToastUtil.showToast(mContext,"显示二维码扫描页面");
+                        ToastUtil.showToast(mContext, "显示二维码扫描页面");
                         break;
                     case item_paymoney:
-                        ToastUtil.showToast(mContext,"显示钱包页面");
+                        ToastUtil.showToast(mContext, "显示钱包页面");
                         break;
                     case item_group:
                         Intent groupMaker = new Intent(mContext, GroupMakerActivity.class);
@@ -100,7 +110,7 @@ public class ChatFragment extends BaseFragment {
                     case item_chatroom:
                         Intent chatRoomMaker = new Intent(mContext, ChatRoomMakerActivity.class);
                         startActivity(chatRoomMaker);
-                        ToastUtil.showToast(mContext,"显示创建聊天室界面");
+                        ToastUtil.showToast(mContext, "显示创建聊天室界面");
                         break;
                 }
 
@@ -114,45 +124,52 @@ public class ChatFragment extends BaseFragment {
     @Override
     public void initData() {
         mLv_chat = (ListView) mChatView.findViewById(R.id.lv_chat);
-        Map<String, EMConversation> allConversations = ConversationsDao.getAllConversations();
-        mMap = ParseConversations.parse(allConversations);
-        mKeyList = new ArrayList<>();
-        if (mMap != null) {
-            for (Map.Entry<String, EMConversation> entry : mMap.entrySet()) {
-                mKeyList.add(entry.getKey());
+        new Thread() {
+            @Override
+            public void run() {
+
+                mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
+                if (mAllConversations != null) {
+                    mConversationList = new ArrayList<String>();
+                    for (Map.Entry entry : mAllConversations.entrySet()) {
+                        String conversationId = (String) entry.getKey();
+                        mConversationList.add(conversationId);
+                    }
+                    mHandler.sendEmptyMessage(GET_DATA);
+                }
             }
-        }
+        }.start();
 
-        mAdapter = new ConversationAdapter();
-
-        mLv_chat.setAdapter(mAdapter);
+        //设置listview的点击侦听
         mLv_chat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(mContext, SingleRoomActivity.class);
-                String conversationId = mKeyList.get(position);
-
-                intent.putExtra("userName",conversationId);
-                startActivity(intent);
-
                 //未读消息数目清零
-                EMConversation conversation = mMap.get(conversationId);
+                String conversationId = mConversationList.get(position);
+                EMConversation conversation = mAllConversations.get(conversationId);
                 conversation.markAllMessagesAsRead();
 
+                //跳转聊天室
+                Intent intent = new Intent(mContext, SingleRoomActivity.class);
+                intent.putExtra("userName", conversationId);
+                startActivity(intent);
             }
         });
         mLv_chat.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                showPopupMenu(view,position);
+                showPopupMenu(view, position);
                 return true;
             }
         });
 
         initSwipeRefresh();
+        //监听消息
+        EMClient.getInstance().chatManager().addMessageListener(msgListener);
     }
 
     //初始化下拉刷新控件
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     private void initSwipeRefresh() {
         mSwipeRefreshView = (SwipeRefreshLayout) mChatView.findViewById(R.id.swipe_refresh);
         mSwipeRefreshView.setColorSchemeResources(R.color.red, R.color.colorPrimary, R.color.name);
@@ -160,48 +177,82 @@ public class ChatFragment extends BaseFragment {
         mSwipeRefreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Thread(){
+                mCurrentTimeMillis = System.currentTimeMillis();
+                new Thread() {
                     @Override
                     public void run() {
-                        Map<String, EMConversation> allConversations = ConversationsDao.getAllConversations();
-                        mMap = ParseConversations.parse(allConversations);
-                        if (mMap != null) {
-                            if(mKeyList==null)
-                                mKeyList = new ArrayList<>();
-                            for (Map.Entry<String, EMConversation> entry : mMap.entrySet()) {
-                                mKeyList.clear();
-                                mKeyList.add(entry.getKey());
+                        mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
+                        if (mAllConversations != null) {
+                            for (Map.Entry<String, EMConversation> entry : mAllConversations.entrySet()) {
+                                if(!mConversationList.contains(entry.getKey())){
+                                    mConversationList.add(entry.getKey());
+                                }
                             }
                         }
-                        mHandler.sendEmptyMessage(0);
-                        mSwipeRefreshView.setRefreshing(false);
+                        //每次刷新至少要1500毫秒
+                        long newTime = System.currentTimeMillis();
+                        if (newTime - mCurrentTimeMillis > 1500) {
+                            mContext.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mSwipeRefreshView.setRefreshing(false);
+                                }
+                            });
+                        } else {
+                            try {
+                                Thread.sleep(1500 - (newTime - mCurrentTimeMillis));
+                                mContext.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mSwipeRefreshView.setRefreshing(false);
+                                    }
+                                });
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        mHandler.sendEmptyMessage(REFRESH_DATA);
                     }
                 }.start();
-                // 这个不能写在外边，不然会直接收起来
-                //
             }
         });
     }
 
     //长按条目显示更多操作
-    private void showPopupMenu(View view,final int position) {
-
+    private void showPopupMenu(View view, final int position) {
+        final String conversationId = mConversationList.get(position);
         PopupMenu popupMenu = new PopupMenu(mContext, view);
-        popupMenu.getMenuInflater().inflate(R.menu.conversation_menu,popupMenu.getMenu());
+        popupMenu.getMenuInflater().inflate(R.menu.conversation_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.item_delete:
-                        String conversationId = mKeyList.get(position);
-                        EMClient.getInstance().chatManager().deleteConversation(conversationId, true);
-                        mKeyList.remove(position);
-                        mAdapter.notifyDataSetChanged();
-                        ToastUtil.showToast(mContext,"删除成功");
+
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                EMClient.getInstance().chatManager().deleteConversation(conversationId, true);
+                                mConversationList.remove(position);
+                                mHandler.sendEmptyMessage(REFRESH_DATA);
+                                ToastUtil.showToast(mContext, "删除成功");
+                            }
+                        }.start();
+
                         break;
                     case R.id.item_markread:
                         //// TODO: 2017/12/6
-                        ToastUtil.showToast(mContext,"聊天标记为已读");
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                EMConversation conversation = EMClient.getInstance().chatManager().getConversation(conversationId);
+                                //指定会话消息未读数清零
+                                EMConversation remove = mAllConversations.remove(conversationId);
+                                remove.markAllMessagesAsRead();
+                                mAllConversations.put(conversationId,remove);
+                                mHandler.sendEmptyMessage(REFRESH_DATA);
+                            }
+                        }.start();
                         break;
                 }
 
@@ -216,12 +267,18 @@ public class ChatFragment extends BaseFragment {
 
         @Override
         public int getCount() {
-            return mKeyList.size();
+            if (mConversationList != null) {
+                return mConversationList.size();
+            }
+            return 0;
         }
 
         @Override
         public String getItem(int position) {
-            return mKeyList.get(position);
+            if (mConversationList != null) {
+                return mConversationList.get(position);
+            }
+            return null;
         }
 
         @Override
@@ -245,30 +302,30 @@ public class ChatFragment extends BaseFragment {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            if (mMap != null) {
+            if (mAllConversations != null) {
                 String conversationId = getItem(position);
                 holder.tv_conv_name.setText(conversationId);
 
-                EMConversation conversation = mMap.get(conversationId);
+                EMConversation conversation = mAllConversations.get(conversationId);
                 //设置未读
                 int unreadMsgCount = conversation.getUnreadMsgCount();
-                if(unreadMsgCount>0){
-                    if(unreadMsgCount>99){
+                if (unreadMsgCount > 0) {
+                    if (unreadMsgCount > 99) {
                         holder.tv_unread.setText("99");
-                    }else{
-                        holder.tv_unread.setText(unreadMsgCount+"");
+                    } else {
+                        holder.tv_unread.setText(unreadMsgCount + "");
                     }
-                }else{
+                } else {
                     holder.tv_unread.setVisibility(View.INVISIBLE);
                 }
                 //设置时间
                 EMMessage lastMessage = conversation.getLastMessage();
                 long msgTime = lastMessage.getMsgTime();
                 long interval = msgTime - System.currentTimeMillis();
-                if(interval>86400){
-                    holder.tv_time.setText(DateUtil.formate("E",msgTime));
-                }else{
-                    holder.tv_time.setText(DateUtil.formate("HH:mm",msgTime));
+                if (interval > 86400) {
+                    holder.tv_time.setText(DateUtil.formate("E", msgTime));
+                } else {
+                    holder.tv_time.setText(DateUtil.formate("HH:mm", msgTime));
                 }
 
                 if (lastMessage.getType() == EMMessage.Type.TXT) {
@@ -295,15 +352,86 @@ public class ChatFragment extends BaseFragment {
         public TextView tv_unread;
     }
 
-    public void createConversation(){
-        Map<String, EMConversation> allConversations = ConversationsDao.getAllConversations();
-        mMap = ParseConversations.parse(allConversations);
-        if (mMap != null) {
-            for (Map.Entry<String, EMConversation> entry : mMap.entrySet()) {
-                mKeyList.add(entry.getKey());
+    //回调接口 创建新的会话
+    public void createConversation() {
+        new Thread() {
+            @Override
+            public void run() {
+                mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
+                if (mAllConversations != null) {
+                    for (Map.Entry<String, EMConversation> entry : mAllConversations.entrySet()) {
+                        if(!mConversationList.contains(entry.getKey())){
+                            mConversationList.add(entry.getKey());
+                        }
+                    }
+                }
+                mHandler.sendEmptyMessage(REFRESH_DATA);
             }
-        }
-        mAdapter.notifyDataSetChanged();
+        }.start();
     }
 
+    //监听消息的接收
+    EMMessageListener msgListener = new EMMessageListener() {
+
+        @Override
+        public void onMessageReceived(List<EMMessage> messages) {
+            //收到消息
+            getNewMessages();
+        }
+
+        @Override
+        public void onCmdMessageReceived(List<EMMessage> messages) {
+            //收到透传消息
+        }
+
+        @Override
+        public void onMessageRead(List<EMMessage> messages) {
+            //收到已读回执
+        }
+
+        @Override
+        public void onMessageDelivered(List<EMMessage> message) {
+            //收到已送达回执
+        }
+        @Override
+        public void onMessageRecalled(List<EMMessage> messages) {
+            //消息被撤回
+        }
+
+        @Override
+        public void onMessageChanged(EMMessage message, Object change) {
+            //消息状态变动
+        }
+    };
+
+    //接收到新消息的逻辑
+    private void getNewMessages() {
+        new Thread(){
+            @Override
+            public void run() {
+                mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
+                if (mAllConversations != null) {
+                    if (mConversationList == null)
+                        mConversationList = new ArrayList<>();
+                    for (Map.Entry<String, EMConversation> entry : mAllConversations.entrySet()) {
+                        mConversationList.clear();
+                        mConversationList.add(entry.getKey());
+                    }
+                }
+                mHandler.sendEmptyMessage(REFRESH_DATA);
+            }
+        }.start();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //销毁监听器
+        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
+    }
+
+    //给conversation排序
+    private void sort(Map<String,EMConversation> map){
+
+    }
 }

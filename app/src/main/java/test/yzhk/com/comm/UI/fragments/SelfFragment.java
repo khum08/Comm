@@ -19,6 +19,7 @@ import com.hyphenate.chat.EMClient;
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.LoginActivity;
 import test.yzhk.com.comm.UI.activities.NickSigningActivity;
+import test.yzhk.com.comm.UI.activities.ServiceActivity;
 import test.yzhk.com.comm.UI.activities.SettingActivity;
 import test.yzhk.com.comm.UI.view.CircleImageView;
 import test.yzhk.com.comm.UI.view.SettingItemView;
@@ -65,11 +66,21 @@ public class SelfFragment extends BaseFragment {
         initSignOut();
         initSignning();
 
-        initRegister();
         initSetting();
         initHeaderView();
         initNickName();
 
+        initService();
+    }
+
+    //初始化生活服务功能
+    private void initService() {
+        selfPage.findViewById(R.id.item_lifeservice).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               startActivity(new Intent(mContext, ServiceActivity.class));
+            }
+        });
     }
 
     private void initSignning() {
@@ -272,16 +283,7 @@ public class SelfFragment extends BaseFragment {
 
     }
 
-    private void initRegister() {
-        SettingItemView item_register_login = (SettingItemView) selfPage.findViewById(R.id.item_register_login);
-        item_register_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mContext.startActivity(new Intent(mContext, LoginActivity.class));
-            }
-        });
 
-    }
 
 
 }
