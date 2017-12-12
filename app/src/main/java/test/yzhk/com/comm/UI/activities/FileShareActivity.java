@@ -352,18 +352,30 @@ public class FileShareActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess() {
                                         ToastUtil.showToast(FileShareActivity.this, "文件下载成功");
-                                        viewHolder.iv_download.setVisibility(View.GONE);
-                                        viewHolder.tv_read.setVisibility(View.VISIBLE);
+                                        FileShareActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                viewHolder.iv_download.setVisibility(View.GONE);
+                                                viewHolder.tv_read.setVisibility(View.VISIBLE);
+                                            }
+                                        });
                                     }
 
                                     @Override
                                     public void onError(int i, String s) {
+
                                         ToastUtil.showToast(FileShareActivity.this, "文件下载失败");
                                     }
 
                                     @Override
-                                    public void onProgress(int i, String s) {
-                                        pb_file.setProgress(i);
+                                    public void onProgress(final int i, String s) {
+                                        FileShareActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                pb_file.setProgress(i);
+                                            }
+                                        });
+
                                     }
                                 });
                             } catch (HyphenateException e) {
