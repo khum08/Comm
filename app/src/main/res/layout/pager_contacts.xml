@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/ll_groups"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl_searchview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_fri_count"
+            android:text="联系人()"
+            android:paddingLeft="@dimen/dp20"
+            android:background="@color/white"
+            android:textSize="@dimen/dp14"
+            android:paddingTop="@dimen/dp14"
+            android:paddingBottom="@dimen/dp12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <android.support.v7.widget.SearchView
+            android:id="@+id/sv_contacts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:visibility="gone"
+            app:iconifiedByDefault="false"
+            app:queryHint="请输入">
+
+        </android.support.v7.widget.SearchView>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_isloading_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="正在加载..."
+        android:visibility="gone"/>
+
+    <ListView
+        android:id="@+id/lv_group_contacts"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+    </ListView>
+
+
+</LinearLayout>

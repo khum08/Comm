@@ -44,4 +44,7 @@ dependencies {
     compile 'com.flipboard:bottomsheet-commons:1.5.3'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.0.1'
+
+    /*添加二维码扫描依赖*/
+    compile 'com.github.yuzhiqiang1993:zxing:2.0.0'
 }

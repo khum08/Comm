@@ -7,6 +7,9 @@
     <item android:id="@+id/tv_add_fri"
           android:icon="@drawable/ic_person_add_blue_grey_300_24dp"
           android:title="添加好友"/>
+    <item android:id="@+id/tv_make_group"
+          android:icon="@drawable/ic_people_blue_grey_300_24dp"
+          android:title="创建群聊"/>
     <item android:id="@+id/tv_blacknum"
           android:icon="@drawable/ic_speaker_notes_off_blue_grey_300_24dp"
           android:title="黑名单"/>

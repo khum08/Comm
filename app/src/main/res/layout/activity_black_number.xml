@@ -4,9 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="test.yzhk.com.comm.UI.activities.BlackNumberActivity">
-    <include layout="@layout/custom_actionbar"/>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_blacknumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="黑名单"
+        android:background="@color/colorPrimary"
+        app:titleTextColor="@color/white"
+        app:navigationIcon="@drawable/ic_back"
+        ></android.support.v7.widget.Toolbar>
     <TextView
         android:id="@+id/tv_isloading_black"
         android:layout_width="match_parent"

@@ -21,6 +21,7 @@ import test.yzhk.com.comm.UI.activities.LoginActivity;
 import test.yzhk.com.comm.UI.activities.NickSigningActivity;
 import test.yzhk.com.comm.UI.activities.ServiceActivity;
 import test.yzhk.com.comm.UI.activities.SettingActivity;
+import test.yzhk.com.comm.UI.activities.WalletActivity;
 import test.yzhk.com.comm.UI.view.CircleImageView;
 import test.yzhk.com.comm.UI.view.SettingItemView;
 import test.yzhk.com.comm.utils.PrefUtil;
@@ -37,13 +38,13 @@ public class SelfFragment extends BaseFragment {
 
     private View selfPage;
     private CircleImageView mCi_headerview;
-    protected static Uri tempUri;
     private static final int UPLOADHEADERIMAGE = 772;
     private static final int CROP_SMALL_PICTURE = 833;
     private static final int NICKNAME_SETTING = 967;
     private static final int SIGNNING_SETTING = 827;
     private SettingItemView mItem_nickname;
     private SettingItemView mItem_signning;
+    private SettingItemView mItem_money;
 
     @Override
     public View initView() {
@@ -71,6 +72,18 @@ public class SelfFragment extends BaseFragment {
         initNickName();
 
         initService();
+        initWallet();
+    }
+
+    private void initWallet() {
+        mItem_money = (SettingItemView) selfPage.findViewById(R.id.item_money);
+        mItem_money.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(mContext,WalletActivity.class));
+            }
+        });
+
     }
 
     //初始化生活服务功能
@@ -188,7 +201,6 @@ public class SelfFragment extends BaseFragment {
         if (uri == null) {
             Log.i("tag", "The uri is not exist.");
         }
-        tempUri = uri;
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         // 设置裁剪
@@ -282,8 +294,5 @@ public class SelfFragment extends BaseFragment {
 
 
     }
-
-
-
 
 }

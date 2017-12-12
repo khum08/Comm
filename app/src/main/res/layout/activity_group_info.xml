@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,45 +8,330 @@
     tools:context="test.yzhk.com.comm.UI.activities.GroupInfoActivity">
 
     <include layout="@layout/custom_actionbar"/>
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/tv_owner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="群主"
-                />
+            android:orientation="vertical"
+            android:weightSum="1">
 
-            <GridView
-                android:id="@+id/gv_number"
+
+            <LinearLayout
+                android:id="@+id/ll_group_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:numColumns="5">
+                android:layout_marginTop="@dimen/dp20"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10"
+                >
 
-            </GridView>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="群名称"/>
+
+                <TextView
+                    android:id="@+id/tv_group_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="hhh"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="群ID:"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_groupid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="zhangsan"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="群主:"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_owner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="zhangsan"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_admin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp20"
+                android:background="@color/white"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="管理员"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_right"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="群成员"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_right"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_blacknumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="群黑名单"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_right"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_groupdesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp20"
+                android:background="@color/white"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="群组描述"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_right"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_change_notice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp20"
+                android:background="@color/white"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="更新群公告"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_right"
+                    />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_admin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="管理员"/>
-            <TextView
-                android:id="@+id/tv_groupid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="群名称"/>
-            <TextView
-                android:id="@+id/tv_groupdesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="群组描述"/>
+                android:background="@color/white"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10"
+                android:text="群公告："/>
 
+            <TextView
+                android:id="@+id/tv_notice_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp28"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10"
+                android:text="明天下午打球"
+                android:textSize="@dimen/dp12"/>
+
+            <LinearLayout
+                android:id="@+id/ll_share_file"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp20"
+                android:background="@color/white"
+                android:gravity="center"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="共享文件"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_right"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp20"
+                android:background="@color/white"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp18"
+                android:paddingTop="@dimen/dp10">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="屏蔽群消息"/>
+
+                <Switch
+                    android:id="@+id/switch_getmsg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_out"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginTop="@dimen/dp20"
+                android:background="@drawable/button_background"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingTop="@dimen/dp10"
+                android:layout_marginLeft="@dimen/dp18"
+                android:layout_marginRight="@dimen/dp18"
+                android:text="退出群组"
+                android:textColor="@color/white"
+                android:layout_weight="0.04"/>
+
+            <Button
+                android:id="@+id/btn_release"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginBottom="@dimen/dp40"
+                android:background="@drawable/button_background"
+                android:layout_marginTop="@dimen/dp20"
+                android:layout_marginLeft="@dimen/dp18"
+                android:layout_marginRight="@dimen/dp18"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingTop="@dimen/dp10"
+                android:text="解散群组"
+                android:textColor="@color/white"/>
         </LinearLayout>
+
     </ScrollView>
 
 

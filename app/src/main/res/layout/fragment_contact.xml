@@ -2,30 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-    android:orientation="vertical">
-    <include layout="@layout/custom_actionbar"/>
+              android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_isloading"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="正在加载..."/>
-    <SearchView
-        android:id="@+id/searchview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:iconifiedByDefault="false"
-        android:queryHint="请输入好友名称"
-        android:visibility="gone"
-        />
+        android:layout_height="wrap_content">
 
-    <ListView
-        android:id="@+id/lv_contact"
+        <include layout="@layout/custom_actionbar"/>
+
+        <TextView
+            android:id="@+id/tv_another"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="群组"
+            android:layout_centerVertical="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dp16"
+            android:padding="@dimen/dp8"
+            android:layout_marginLeft="@dimen/dp10"
+            />
+    </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager_contacts"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        >
-    </ListView>
+        android:layout_height="match_parent">
+
+    </android.support.v4.view.ViewPager>
 
 </LinearLayout>

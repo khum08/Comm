@@ -1,6 +1,9 @@
 package test.yzhk.com.comm.utils;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 
 import java.io.File;
@@ -54,6 +57,58 @@ public class FileUtil {
             e.printStackTrace();
         }
         return file;
+    }
+
+    //创建一个文件保存路径
+    public static File createFileSavePath(Context context,String filename){
+        File dir;
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+            dir = Environment.getExternalStorageDirectory();
+        }else{
+            dir = context.getExternalCacheDir();
+        }
+        File file = new File(dir, filename);
+        if(file.exists()){
+            file.delete();
+        }
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+    //判断文件是否存在
+    public static boolean isFileExit(Context context,String filename){
+        File dir;
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+            dir = Environment.getExternalStorageDirectory();
+        }else{
+            dir = context.getExternalCacheDir();
+        }
+        File file = new File(dir, filename);
+        if(file.exists()){
+            return true;
+        }
+        return false;
+    }
+
+    //查看文件
+    public static void readFile(Context context,String path){
+            File file = new File(path);
+            if(null==file || !file.exists()){
+                return;
+            }
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setDataAndType(Uri.fromFile(file), "file/*");
+            try {
+                context.startActivity(intent);
+                context.startActivity(Intent.createChooser(intent,"选择浏览工具"));
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
     }
 }
 

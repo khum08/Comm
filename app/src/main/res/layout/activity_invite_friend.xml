@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="test.yzhk.com.comm.UI.activities.InviteFriendActivity"
+    android:orientation="vertical"
+    android:baselineAligned="false">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_invite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:title="邀请好友"
+        app:titleTextColor="@color/white"
+        app:navigationIcon="@drawable/ic_back"
+
+        />
+    <LinearLayout
+        android:padding="@dimen/dp10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/dp16"
+            android:text="联系人"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="@dimen/dp16"
+            android:text="()"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/btn_selectall"
+            android:layout_width="54dp"
+            android:text="全选"
+            android:textColor="@color/white"
+            android:background="@drawable/button_background"
+            android:layout_height="27dp"/>
+        <Button
+            android:id="@+id/btn_selectother"
+            android:layout_width="54dp"
+            android:text="反选"
+            android:textColor="@color/white"
+            android:layout_marginLeft="@dimen/dp8"
+            android:background="@drawable/button_background"
+            android:layout_height="27dp"/>
+    </LinearLayout>
+    <ListView
+        android:id="@+id/lv_invite"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </ListView>
+</LinearLayout>

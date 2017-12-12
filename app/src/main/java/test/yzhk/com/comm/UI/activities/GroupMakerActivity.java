@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class GroupMakerActivity extends BaseActivity {
     private String mDesc;
     private EMGroupOptions mOption;
     private EMGroup mGroup;
+    private Toolbar toolbar_group_maker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +79,7 @@ public class GroupMakerActivity extends BaseActivity {
                     mLv_group.setAdapter(mGroupAdapter);
                     break;
                 case COMPLETE:
-                    Intent intent = new Intent(GroupMakerActivity.this, GroupActivity.class);
-                    Bundle bundle = new Bundle();
+                    Intent intent = new Intent(GroupMakerActivity.this, SingleRoomActivity.class);
                     intent.putExtra("groupId",mGroup.getGroupId());
                     startActivity(intent);
                     finish();
@@ -96,6 +97,16 @@ public class GroupMakerActivity extends BaseActivity {
         tv_selected = (TextView) findViewById(R.id.tv_selected);
         tv_selected.setText("(" + selectedList.size() + "/" + mUsernames.size() + ")");
         tv_selectall = (TextView) findViewById(R.id.tv_selectall);
+        //初始化toolbar
+        toolbar_group_maker = (Toolbar)findViewById(R.id.toolbar_group_maker);
+        setSupportActionBar(toolbar_group_maker);
+        toolbar_group_maker.setNavigationOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         tv_selectall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

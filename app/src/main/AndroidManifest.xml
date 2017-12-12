@@ -113,8 +113,13 @@
         <activity android:name=".UI.activities.GroupMakerActivity"/>
         <activity android:name=".UI.activities.ChatRoomMakerActivity"/>
         <activity android:name=".UI.activities.ServiceActivity"/>
-        <activity android:name=".UI.activities.GroupActivity"/>
         <activity android:name=".UI.activities.GroupInfoActivity"/>
+        <activity android:name=".UI.activities.FileShareActivity">
+        </activity>
+        <activity android:name=".UI.activities.InviteFriendActivity">
+        </activity>
+        <activity android:name=".UI.activities.WalletActivity">
+        </activity>
     </application>
 
 </manifest>

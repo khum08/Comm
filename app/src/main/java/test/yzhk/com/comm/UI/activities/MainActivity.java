@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.flipboard.bottomsheet.BottomSheetLayout;
@@ -18,6 +19,8 @@ import com.hyphenate.EMContactListener;
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.util.NetUtils;
+
+import java.util.List;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.fragments.BaseFragment;
@@ -40,6 +43,7 @@ public class MainActivity extends BaseActivity {
     private static final String TAG_CONVERSATION = "TAG_CONVERSATION";
     private static final String TAG_CONTACTS = "TAG_CONTACTS";
     private static final String TAG_SETTING = "TAG_SETTING";
+    private static final int ENTER_FRI_ACTIVITY = 752;
     private String[] tags= {TAG_CONVERSATION,TAG_CONTACTS,TAG_SETTING};
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -209,13 +213,6 @@ public class MainActivity extends BaseActivity {
         mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
     //初始化fragment
     private void initFragments() {
         mChatFragment = new ChatFragment();
@@ -259,5 +256,18 @@ public class MainActivity extends BaseActivity {
         ChatFragment conversationFragment = (ChatFragment) mFm.findFragmentByTag(TAG_CONVERSATION);
         return conversationFragment;
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==ENTER_FRI_ACTIVITY){
+
+            List<Fragment> fragments = getSupportFragmentManager().getFragments();
+            if(fragments.get(1)!=null){
+                fragments.get(1).onActivityResult(requestCode, resultCode, data);
+            }
+        }
+        Log.e("ttttttttttt","zou le mainActivity");
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

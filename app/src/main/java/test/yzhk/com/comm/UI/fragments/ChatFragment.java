@@ -21,6 +21,8 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.common.Constant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +32,11 @@ import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.ChatRoomMakerActivity;
 import test.yzhk.com.comm.UI.activities.GroupMakerActivity;
 import test.yzhk.com.comm.UI.activities.SingleRoomActivity;
+import test.yzhk.com.comm.UI.activities.WalletActivity;
 import test.yzhk.com.comm.utils.DateUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 
+import static android.app.Activity.RESULT_OK;
 import static test.yzhk.com.comm.R.id.item_chatroom;
 import static test.yzhk.com.comm.R.id.item_group;
 import static test.yzhk.com.comm.R.id.item_paymoney;
@@ -46,6 +50,7 @@ public class ChatFragment extends BaseFragment {
 
     private static final int GET_DATA = 644;
     private static final int REFRESH_DATA = 61;
+    private static final int REQUEST_CODE_SCAN = 407;
     public View mChatView;
     private static final String TAG = "ChatFragment";
     private ConversationAdapter mAdapter;
@@ -98,10 +103,11 @@ public class ChatFragment extends BaseFragment {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case item_scan:
-                        ToastUtil.showToast(mContext, "显示二维码扫描页面");
+                        Intent intent = new Intent(mContext,  CaptureActivity.class);
+                        startActivityForResult(intent, REQUEST_CODE_SCAN);
                         break;
                     case item_paymoney:
-                        ToastUtil.showToast(mContext, "显示钱包页面");
+                        startActivity(new Intent(mContext, WalletActivity.class));
                         break;
                     case item_group:
                         Intent groupMaker = new Intent(mContext, GroupMakerActivity.class);
@@ -110,7 +116,6 @@ public class ChatFragment extends BaseFragment {
                     case item_chatroom:
                         Intent chatRoomMaker = new Intent(mContext, ChatRoomMakerActivity.class);
                         startActivity(chatRoomMaker);
-                        ToastUtil.showToast(mContext, "显示创建聊天室界面");
                         break;
                 }
 
@@ -216,6 +221,7 @@ public class ChatFragment extends BaseFragment {
                 }.start();
             }
         });
+
     }
 
     //长按条目显示更多操作
@@ -432,6 +438,16 @@ public class ChatFragment extends BaseFragment {
 
     //给conversation排序
     private void sort(Map<String,EMConversation> map){
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+                ToastUtil.showToast(mContext,content);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

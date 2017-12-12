@@ -3,6 +3,10 @@ package test.yzhk.com.comm.UI.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,22 +28,51 @@ public class BlackNumberActivity extends BaseActivity {
     private ListView mLv_blacklist;
     private List<String> mBlackListUsernames;
     private BlackNumberAdapter mAdapter;
+    private static final int DATA_CHANGE = 718;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_black_number);
 
+        initToolbar();
+
         initListView();
     }
 
+    private void initToolbar() {
+        Toolbar toolbar_blacknumber = (Toolbar) findViewById(R.id.toolbar_blacknumber);
+        setSupportActionBar(toolbar_blacknumber);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            switch (msg.what) {
+                case DATA_CHANGE:
+                    mAdapter.notifyDataSetChanged();
+                    break;
+            }
+
+        }
+    };
+
     private void initListView() {
-        mLv_blacklist = (ListView)findViewById(R.id.lv_blacklist);
+        mLv_blacklist = (ListView) findViewById(R.id.lv_blacklist);
         TextView tv_isloading_black = (TextView) findViewById(R.id.tv_isloading_black);
         mBlackListUsernames = EMClient.getInstance().contactManager().getBlackListUsernames();
-        if(mBlackListUsernames.size()<1){
+        if (mBlackListUsernames.size() < 1) {
             tv_isloading_black.setText("黑名单为空...");
-        }else{
+        } else {
             tv_isloading_black.setVisibility(View.GONE);
             mLv_blacklist.setVisibility(View.VISIBLE);
         }
@@ -58,38 +91,43 @@ public class BlackNumberActivity extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("从黑名单中移除")
                 .setMessage("移除后能互相收发消息\n请确认")
-                .setNegativeButton("取消",null)
+                .setNegativeButton("取消", null)
                 .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            EMClient.getInstance().contactManager().removeUserFromBlackList(mBlackListUsernames.get(position));
-                            ToastUtil.showToast(BlackNumberActivity.this,"从黑名单中移除成功");
-                            mBlackListUsernames.remove(position);
-                            mAdapter.notifyDataSetChanged();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    EMClient.getInstance().contactManager().removeUserFromBlackList(mBlackListUsernames.get(position));
+                                    ToastUtil.showToast(BlackNumberActivity.this, "从黑名单中移除成功");
+                                    mBlackListUsernames.remove(position);
+                                    mHandler.sendEmptyMessage(DATA_CHANGE);
 
-                        } catch (HyphenateException e) {
-                            e.printStackTrace();
-                            ToastUtil.showToast(BlackNumberActivity.this,"从黑名单中移除失败");
-                        }
+                                } catch (HyphenateException e) {
+                                    e.printStackTrace();
+                                    ToastUtil.showToast(BlackNumberActivity.this, "从黑名单中移除失败");
+                                }
+                            }
+                        }).start();
                     }
                 });
-          builder.show();
+        builder.show();
     }
 
-    public class BlackNumberAdapter extends BaseAdapter{
+    public class BlackNumberAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            if(mBlackListUsernames==null){
-              return 0;
+            if (mBlackListUsernames == null) {
+                return 0;
             }
             return mBlackListUsernames.size();
         }
 
         @Override
         public String getItem(int position) {
-            if(mBlackListUsernames==null)
+            if (mBlackListUsernames == null)
                 return null;
             return mBlackListUsernames.get(position);
         }
@@ -102,12 +140,12 @@ public class BlackNumberActivity extends BaseActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             MyViewHolder viewHolder;
-            if(convertView==null){
+            if (convertView == null) {
                 viewHolder = new MyViewHolder();
                 convertView = View.inflate(BlackNumberActivity.this, R.layout.list_item_contact, null);
 //                viewHolder.iv_contact_icon = (ImageView) convertView.findViewById(R.id.iv_contact_icon);
                 viewHolder.tv_contact = (TextView) convertView.findViewById(R.id.tv_contact_name);
-            }else{
+            } else {
                 viewHolder = (MyViewHolder) convertView.getTag();
             }
 

@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
@@ -62,6 +63,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
     private static final int GET_LOCATION = 147;
     private static final int GET_DATA = 186;
     private static final int REFRESH_DATA = 917;
+    private static final int GET_GROUP_DATA =550;
     private String mUserName;
     private ListView mLv_chat_content;
     private ChatAdapter mChatAdapter;
@@ -71,6 +73,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
     public List<EMMessage> conversationlist = new ArrayList<>();
     private List<EMMessage> showMessages = new ArrayList<>();
+    //将要存进数据库中的newMessages
     private List<EMMessage> newMessages = new ArrayList<>();
     private ImageView mIv_add;
     private EditText mEt_chatcontent;
@@ -81,7 +84,22 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
     private LinearLayout mView_more_action;
     private Button mBt_send;
     private ImageView mIv_add_choice;
-    private static Uri tempUri;
+
+    private SwipeRefreshLayout mSingleroon_refresh;
+    private Uri photoUri1;
+    private File mImgFile;
+    private Uri mVideoUri;
+    private File mVideoFile;
+    private EMConversation mConversation;
+    //聊天消息列表
+    private List<EMMessage> mAllMessages;
+    private long mCurrentTimeMillis;
+    private String mGroupId;
+    private EMMessage.ChatType mChatType;
+    private EMGroup mGroup;
+    private TextView mTv_title;
+    private String mGroupName;
+
     public Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -93,23 +111,25 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
                 case GET_DATA:
                     mChatAdapter = new ChatAdapter();
                     mLv_chat_content.setAdapter(mChatAdapter);
+                    break;
+                case GET_GROUP_DATA:
+                    mTv_title.setText(mGroup.getGroupName());
             }
         }
     };
-    private SwipeRefreshLayout mSingleroon_refresh;
-    private Uri photoUri1;
-    private File mImgFile;
-    private Uri mVideoUri;
-    private File mVideoFile;
-    private EMConversation mConversation;
-    //聊天消息列表
-    private List<EMMessage> mAllMessages;
-    private long mCurrentTimeMillis;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        mUserName = intent.getStringExtra("userName");
+        mGroupId = intent.getStringExtra("groupId");
+        if(mUserName!=null){
+            mChatType = EMMessage.ChatType.Chat;
+        }else if(mGroupId!=null){
+            mChatType = EMMessage.ChatType.GroupChat;
+        }
+
         setContentView(R.layout.activity_single_room);
         //权限申请
         initView();
@@ -247,6 +267,8 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
                     //创建一条文本消息，text为消息文字内容，mUserName为对方用户或者群聊的id，异步发送消息
                     final EMMessage message = EMMessage.createTxtSendMessage(text, mUserName);
+                    if (mChatType == EMMessage.ChatType.GroupChat)
+                        message.setChatType(EMMessage.ChatType.GroupChat);
                     newMessages.add(message);
                     new Thread() {
                         @Override
@@ -407,10 +429,13 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
     //初始化titlebar
     private void initTitle() {
-        Intent data = getIntent();
-        mUserName = data.getStringExtra("userName");
-        TextView tv_title = (TextView) findViewById(R.id.tv_title);
-        tv_title.setText(mUserName);
+        mTv_title = (TextView) findViewById(R.id.tv_title);
+        mIv_add = (ImageView) findViewById(R.id.iv_add);
+        if(mChatType== EMMessage.ChatType.GroupChat){
+            initGroup();
+        }else if(mChatType == EMMessage.ChatType.Chat){
+            mTv_title.setText(mUserName);
+        }
 
         ImageView iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_back.setVisibility(View.VISIBLE);
@@ -424,16 +449,47 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
             }
         });
 
-        mIv_add = (ImageView) findViewById(R.id.iv_add);
-        mIv_add.setImageResource(R.drawable.ic_person_white_24dp);
+        if(mChatType== EMMessage.ChatType.GroupChat){
+            mIv_add.setImageResource(R.drawable.ic_people_white_24dp);
+            mIv_add.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(SingleRoomActivity.this, GroupInfoActivity.class);
+                    intent.putExtra("groupId",mGroupId);
+                    intent.putExtra("groupName",mGroupName);
+                    startActivity(intent);
+                }
+            });
+        }else if(mChatType == EMMessage.ChatType.Chat){
+            mIv_add.setImageResource(R.drawable.ic_person_white_24dp);
+            mIv_add.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showPopupMenu(v);
+                }
+            });
+        }
         mIv_add.setVisibility(View.VISIBLE);
-        mIv_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopupMenu(v);
-            }
-        });
+    }
 
+    //如果是群组，则初始化群组信息
+    private void initGroup() {
+        mGroup = EMClient.getInstance().groupManager().getGroup(mGroupId);
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    mGroup = EMClient.getInstance().groupManager().getGroupFromServer(mGroupId);
+                    mHandler.sendEmptyMessage(GET_GROUP_DATA);
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+        if(mGroup!=null){
+            mGroupName = mGroup.getGroupName();
+            mTv_title.setText(mGroupName);
+        }
     }
 
     //右上角更多操作按钮
@@ -538,6 +594,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
                 viewHold.rl_root_other = (RelativeLayout) convertView.findViewById(R.id.rl_root_other);
                 viewHold.tv_other = (TextView) convertView.findViewById(R.id.tv_other);
+                viewHold.tv_ta_name = (TextView) convertView.findViewById(R.id.tv_ta_name);
                 viewHold.iv_other = (ImageView) convertView.findViewById(R.id.iv_ohter);
                 convertView.setTag(viewHold);
             } else {
@@ -545,8 +602,8 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
             }
 
             EMMessage message = getItem(position);
-
-            if (message.getFrom().equalsIgnoreCase(mMe)) {
+            String from = message.getFrom();
+            if (from.equalsIgnoreCase(mMe)) {
 
                 if (message.getType() != null) {
                     if (message.getType().equals(EMMessage.Type.TXT)) {
@@ -569,7 +626,11 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
                     viewHold.rl_root_me.setVisibility(View.VISIBLE);
                 }
             } else {
-
+                if(mChatType== EMMessage.ChatType.Chat){
+                    viewHold.tv_ta_name.setText("ta");
+                }else if(mChatType== EMMessage.ChatType.GroupChat){
+                    viewHold.tv_ta_name.setText(from);
+                }
                 if (message.getType() != null) {
                     if (message.getType().equals(EMMessage.Type.TXT)) {
                         viewHold.tv_other.setVisibility(View.VISIBLE);
@@ -620,8 +681,10 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
         public ImageView iv_me;
 
         public RelativeLayout rl_root_other;
+        public TextView tv_ta_name;
         public TextView tv_other;
         public ImageView iv_other;
+
     }
 
     private TextView tv_photo;
@@ -703,37 +766,64 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
             switch (requestCode) {
                 case GET_PHOTO:
                     //加载图片
-                    EMMessage imageSendMessage = createImageSendMessage(UriUtil.getFileAbsolutePath(this, data.getData()), false, mUserName);
-//                    if (chatType == CHATTYPE_GROUP)
-//                       message.setChatType(ChatType.GroupChat);
-//                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
-                    conversationlist.add(imageSendMessage);
+                    final EMMessage imageSendMessage = createImageSendMessage(UriUtil.getFileAbsolutePath(this, data.getData()), false, mUserName);
+                    if (mChatType == EMMessage.ChatType.GroupChat)
+                        imageSendMessage.setChatType(EMMessage.ChatType.GroupChat);
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
+                        }
+                    }.start();
+                    showMessages.add(imageSendMessage);
+                    newMessages.add(imageSendMessage);
                     mChatAdapter.notifyDataSetChanged();
                     break;
                 case OPEN_CAMERA:
 
-                    EMMessage imageMsg
+                    final EMMessage imageMsg
                             = EMMessage.createImageSendMessage(mImgFile.getAbsolutePath(), false, mUserName);
                     EMClient.getInstance().chatManager().sendMessage(imageMsg);
-//                    if (chatType == CHATTYPE_GROUP)
-//                       message.setChatType(ChatType.GroupChat);
-//                    EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
-                    conversationlist.add(imageMsg);
+                    if (mChatType == EMMessage.ChatType.GroupChat)
+                        imageMsg.setChatType(EMMessage.ChatType.GroupChat);
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            EMClient.getInstance().chatManager().sendMessage(imageMsg);
+                        }
+                    }.start();
+                    showMessages.add(imageMsg);
+                    newMessages.add(imageMsg);
                     mChatAdapter.notifyDataSetChanged();
                     break;
                 case OPEN_VIDEO:
-                    EMMessage videoMsg = EMMessage.createVideoSendMessage(mVideoFile.getAbsolutePath(), mVideoFile.getAbsolutePath(), (int) mVideoFile.length(), mUserName);
-                    EMClient.getInstance().chatManager().sendMessage(videoMsg);
+                    final EMMessage videoMsg = EMMessage.createVideoSendMessage(mVideoFile.getAbsolutePath(), mVideoFile.getAbsolutePath(), (int) mVideoFile.length(), mUserName);
+                    if (mChatType == EMMessage.ChatType.GroupChat)
+                        videoMsg.setChatType(EMMessage.ChatType.GroupChat);
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            EMClient.getInstance().chatManager().sendMessage(videoMsg);
+                        }
+                    }.start();
                     ToastUtil.showToast(this, "视频发送成功");
-                    //// TODO: 2017/12/7
+                    //// TODO: 2017/12/7 显示视频第一帧
 
                     break;
                 case GET_LOCATION:
                     BDLocation location = (BDLocation) data.getParcelableExtra("location");
-                    EMMessage message = EMMessage.createLocationSendMessage(location.getLatitude(), location.getLongitude()
+                    final EMMessage locationMessage = EMMessage.createLocationSendMessage(location.getLatitude(), location.getLongitude()
                             , location.getAddrStr(), mUserName);
-                    EMClient.getInstance().chatManager().sendMessage(message);
-                    conversationlist.add(message);
+                    if (mChatType == EMMessage.ChatType.GroupChat)
+                        locationMessage.setChatType(EMMessage.ChatType.GroupChat);
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            EMClient.getInstance().chatManager().sendMessage(locationMessage);
+                        }
+                    }.start();
+                    showMessages.add(locationMessage);
+                    newMessages.add(locationMessage);
                     mChatAdapter.notifyDataSetChanged();
                     break;
             }

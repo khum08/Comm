@@ -17,6 +17,7 @@ public abstract class BaseFragment extends Fragment {
 
 
     public MainActivity mContext;
+    public View mRootView;
 
     public abstract View initView();
 
@@ -29,9 +30,9 @@ public abstract class BaseFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = initView();
+        mRootView = initView();
         initData();
-        return rootView;
+        return mRootView;
     }
 
     @Override

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+                android:paddingLeft="@dimen/dp18"
+                android:paddingRight="@dimen/dp12"
+                android:paddingTop="@dimen/dp8"
+                android:paddingBottom="@dimen/dp8"
+                android:gravity="center"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/iv_file"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_folder_open_grey_700_24dp"/>
+    <TextView
+        android:id="@+id/tv_filename"
+        android:layout_toRightOf="@id/iv_file"
+        android:layout_width="wrap_content"
+        android:maxWidth="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp10"
+        android:text="文件名"/>
+    <TextView
+        android:id="@+id/tv_filesize"
+        android:layout_toRightOf="@id/tv_filename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(512kb)"/>
+    <TextView
+        android:id="@+id/tv_src_size"
+        android:layout_below="@id/tv_filename"
+        android:layout_toRightOf="@id/iv_file"
+        android:layout_width="match_parent"
+        android:maxWidth="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp10"
+        android:textSize="@dimen/dp12"
+        android:text="来源：时间："/>
+
+    <ImageView
+        android:id="@+id/iv_download"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:padding="5dp"
+        android:src="@drawable/ic_file_download_teal_a700_24dp"/>
+    <TextView
+        android:id="@+id/tv_read"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:padding="5dp"
+        android:visibility="gone"
+        android:text="查看"
+        android:textColor="@color/name"
+        />
+
+
+</RelativeLayout>

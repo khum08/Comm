@@ -3,20 +3,18 @@ package test.yzhk.com.comm.UI.fragments;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.flipboard.bottomsheet.BottomSheetLayout;
@@ -25,14 +23,18 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.activities.BlackNumberActivity;
-import test.yzhk.com.comm.UI.activities.FriDetailActivity;
-import test.yzhk.com.comm.UI.activities.MainActivity;
-import test.yzhk.com.comm.UI.activities.SingleRoomActivity;
+import test.yzhk.com.comm.UI.activities.GroupMakerActivity;
+import test.yzhk.com.comm.UI.pagers.BasePager;
+import test.yzhk.com.comm.UI.pagers.ContactsFragmentPager;
+import test.yzhk.com.comm.UI.pagers.ContactsPager;
+import test.yzhk.com.comm.UI.pagers.GroupFragmentPager;
+import test.yzhk.com.comm.UI.pagers.GroupPager;
 import test.yzhk.com.comm.utils.ToastUtil;
+import test.yzhk.com.comm.utils.UIUtil;
+
 
 /**
  * Created by 大傻春 on 2017/11/27.
@@ -40,51 +42,38 @@ import test.yzhk.com.comm.utils.ToastUtil;
 
 public class ContactsFragment extends BaseFragment {
 
-
+    private static final String TAG_GROUP = "TAG_GROUP";
+    private static final String TAG_CONTACTS = "TAG_CONTACTS";
     private View mContactsView;
-    private ListView mLv_contact;
+
     //adapter的数据
-    private List<String> mUsernames = new ArrayList<>();
     //服务器端好友列表
-    private List<String> serverUserList;
-    //本地数据中黑名单的列表
-    private List<String> mBlacklist;
     private TextView tv_title;
-    private TextView tv_isloading;
+
     private ImageView iv_add;
-    private ContactsAdapter mContactsAdapter;
+
     private static final int ENTER_FRI_ACTIVITY = 916;
-    private static final int DELETE = 699;
-    private static final int ADD_BLACK = 818;
-    private static final int CREATE_CONVERSATION = 899;
-    private static final int GO_BLACK = 240;
-
-    public Handler mHandler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            tv_isloading.setVisibility(View.GONE);
-            mLv_contact.setVisibility(View.VISIBLE);
-
-            mContactsAdapter = new ContactsAdapter();
-            mLv_contact.setAdapter(mContactsAdapter);
-        }
-    };
-    private SearchView mSearchview;
-
+    private static final int GO_BLACKLISST = 240;
+    private ViewPager mViewpager_contacts;
+    private ArrayList<BasePager> mPagerList;
+    private MyPagerAdapter mPagerAdapter;
+    private TextView tv_another;
+    private ContactsFragmentPager mContactsFragmentPager;
+    private GroupFragmentPager mGroupFragmentPager;
+    private int lastShowFragment;
+    private FragmentManager mFm;
+    private String[] tags = {TAG_CONTACTS, TAG_GROUP};
+    private MyAdapter mAdapter;
+    private ArrayList<BaseFragment> mFragmentPagerList;
 
     @Override
     public View initView() {
 
         mContactsView = View.inflate(mContext, R.layout.fragment_contact, null);
-
-        mLv_contact = (ListView) mContactsView.findViewById(R.id.lv_contact);
+        //标题栏
         tv_title = (TextView) mContactsView.findViewById(R.id.tv_title);
-        tv_title.setText("通讯录");
-
-
-        tv_isloading = (TextView) mContactsView.findViewById(R.id.tv_isloading);
-        mSearchview = (SearchView) mContactsView.findViewById(R.id.searchview);
+        tv_title.setText("联系人");
+        tv_another = (TextView) mContactsView.findViewById(R.id.tv_another);
 
         iv_add = (ImageView) mContactsView.findViewById(R.id.iv_add);
         iv_add.setImageResource(R.drawable.ic_more_detail);
@@ -95,8 +84,101 @@ public class ContactsFragment extends BaseFragment {
                 showBottomSheet();
             }
         });
-
+        mViewpager_contacts = (ViewPager) mContactsView.findViewById(R.id.viewpager_contacts);
         return mContactsView;
+    }
+
+
+    @Override
+    public void initData() {
+//       initData1();
+        initData2();
+    }
+
+    private void initData2() {
+        mFragmentPagerList = new ArrayList<>();
+        mContactsFragmentPager = new ContactsFragmentPager();
+        mGroupFragmentPager = new GroupFragmentPager();
+        mFragmentPagerList.add(mContactsFragmentPager);
+        mFragmentPagerList.add(mGroupFragmentPager);
+
+        mAdapter = new MyAdapter(mContext.getSupportFragmentManager());
+        mViewpager_contacts.setAdapter(mAdapter);
+        mViewpager_contacts.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (position == 0) {
+                    if (positionOffset > 0.5) {
+                        tv_another.setTextSize(UIUtil.dip2px(8, mContext));
+                        tv_title.setTextSize(UIUtil.dip2px(4, mContext));
+                    } else {
+                        tv_another.setTextSize(UIUtil.dip2px(4, mContext));
+                        tv_title.setTextSize(UIUtil.dip2px(8, mContext));
+                    }
+                }
+                if (position == 1) {
+                    if (positionOffset > 0.5) {
+                        tv_title.setTextSize(UIUtil.dip2px(8, mContext));
+                        tv_another.setTextSize(UIUtil.dip2px(4, mContext));
+                    } else {
+                        tv_title.setTextSize(UIUtil.dip2px(4, mContext));
+                        tv_another.setTextSize(UIUtil.dip2px(8, mContext));
+                    }
+                }
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+    }
+
+    public void initData1() {
+        mPagerList = new ArrayList<>();
+        mPagerList.add(new ContactsPager(mContext));
+        mPagerList.add(new GroupPager(mContext));
+
+        mPagerAdapter = new MyPagerAdapter();
+        mViewpager_contacts.setAdapter(mPagerAdapter);
+
+        mViewpager_contacts.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (position == 0) {
+                    if (positionOffset > 0.5) {
+                        tv_another.setTextSize(UIUtil.dip2px(8, mContext));
+                        tv_title.setTextSize(UIUtil.dip2px(4, mContext));
+                    } else {
+                        tv_another.setTextSize(UIUtil.dip2px(4, mContext));
+                        tv_title.setTextSize(UIUtil.dip2px(8, mContext));
+                    }
+                }
+                if (position == 1) {
+                    if (positionOffset > 0.5) {
+                        tv_title.setTextSize(UIUtil.dip2px(8, mContext));
+                        tv_another.setTextSize(UIUtil.dip2px(4, mContext));
+                    } else {
+                        tv_title.setTextSize(UIUtil.dip2px(4, mContext));
+                        tv_another.setTextSize(UIUtil.dip2px(8, mContext));
+                    }
+                }
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+        mViewpager_contacts.setCurrentItem(0, true);
     }
 
     //显示底部bottomsheet
@@ -109,14 +191,18 @@ public class ContactsFragment extends BaseFragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.tv_search:
-                                showSearchView();
+                                ContactsFragmentPager baseFragment = (ContactsFragmentPager)mFragmentPagerList.get(0);
+                                baseFragment.showSearchView();
                                 break;
                             case R.id.tv_add_fri:
                                 showAddDialog();
                                 break;
+                            case R.id.tv_make_group:
+                                startActivity(new Intent(mContext, GroupMakerActivity.class));
+                                break;
                             case R.id.tv_blacknum:
                                 Intent intent = new Intent(mContext, BlackNumberActivity.class);
-                                startActivityForResult(intent,GO_BLACK);
+                                startActivityForResult(intent, GO_BLACKLISST);
                                 break;
                             case R.id.tv_nothing:
                                 ToastUtil.showToast(mContext, "作者真的很帅");
@@ -130,47 +216,6 @@ public class ContactsFragment extends BaseFragment {
                 });
         menuSheetView.inflateMenu(R.menu.bottomsheet_contacts);
         bottomSheetLayout.showWithSheetView(menuSheetView);
-
-
-    }
-
-    //联系人搜索框
-    private void showSearchView() {
-        mSearchview.setVisibility(View.VISIBLE);
-        AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
-        anim.setDuration(1000);
-        anim.setFillAfter(true);
-        mSearchview.startAnimation(anim);
-        mSearchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-
-                if (!TextUtils.isEmpty(newText)) {
-                    mUsernames.clear();
-                    for (int i = 0; i < serverUserList.size(); i++) {
-                        String s = serverUserList.get(i);
-                        if (s.contains(newText + "")) {
-                            mUsernames.add(s);
-                        }
-                    }
-                    mContactsAdapter.notifyDataSetChanged();
-                } else {
-                    mUsernames.clear();
-                    for (int i = 0; i < serverUserList.size(); i++) {
-                        String s = serverUserList.get(i);
-                        mUsernames.add(s);
-                    }
-                    mContactsAdapter.notifyDataSetChanged();
-                }
-                return true;
-            }
-        });
-
     }
 
     //添加好友对话框
@@ -217,151 +262,75 @@ public class ContactsFragment extends BaseFragment {
             }
         });
         builder.show();
+
     }
 
-
-    @Override
-    public void initData() {
-
-        new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    serverUserList = EMClient.getInstance().contactManager().getAllContactsFromServer();
-
-                    if (serverUserList != null && serverUserList.size() == 0) {
-                        ToastUtil.showToast(mContext, "暂时没有好友哦");
-                    }
-                    mUsernames.addAll(serverUserList);
-                    mBlacklist = EMClient.getInstance().contactManager().getBlackListUsernames();
-                    if(mBlacklist!=null){
-                        mUsernames.removeAll(mBlacklist);
-                    }
-                    mHandler.sendEmptyMessage(0);
-                } catch (HyphenateException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-
-        mLv_contact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String friName = mContactsAdapter.getItem(position);
-                Intent intent = new Intent(mContext, FriDetailActivity.class);
-                intent.putExtra("friName", friName);
-                startActivityForResult(intent, ENTER_FRI_ACTIVITY);
-            }
-        });
-
-        //向上滑动时搜索框收起
-        mLv_contact.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(firstVisibleItem>0){
-                    mSearchview.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == ENTER_FRI_ACTIVITY) {
-            switch (resultCode){
-                case DELETE:
-                case ADD_BLACK:
-                    if (mContactsAdapter != null) {
-                        String friName = data.getStringExtra("friName");
-                        mUsernames.remove(friName);
-                        mContactsAdapter.notifyDataSetChanged();
-                    }
-                    break;
-                case CREATE_CONVERSATION:
-                    //在chatfragment中创建会话
-                    String friName = data.getStringExtra("friName");
-                    MainActivity activity = (MainActivity)getActivity();
-                    ChatFragment conversationFragment = activity.getConversationFragment();
-                    conversationFragment.createConversation();
-                    Intent intent = new Intent(mContext, SingleRoomActivity.class);
-                    intent.putExtra("userName",friName);
-                    startActivity(intent);
-                    break;
+        if (requestCode == ENTER_FRI_ACTIVITY || requestCode ==GO_BLACKLISST) {
+            BaseFragment baseFragment = mFragmentPagerList.get(0);
+            Log.e("contactsfragments", "================pass here");
+            if (baseFragment != null) {
+                Log.e("baseFragment", "================is not null");
+                baseFragment.onActivityResult(requestCode, resultCode, data);
             }
-
-        }else if (requestCode == GO_BLACK){
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        serverUserList = EMClient.getInstance().contactManager().getAllContactsFromServer();
-                        if (serverUserList != null && serverUserList.size() == 0) {
-                            ToastUtil.showToast(mContext, "暂时没有好友哦");
-                        }
-                        mUsernames.clear();
-                        mUsernames.addAll(serverUserList);
-                        mBlacklist = EMClient.getInstance().contactManager().getBlackListUsernames();
-                        if(mBlacklist!=null){
-                            mUsernames.removeAll(mBlacklist);
-                        }
-                        mHandler.sendEmptyMessage(0);
-                    } catch (HyphenateException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
         }
-
-
     }
 
-    class ContactsAdapter extends BaseAdapter {
+    class MyPagerAdapter extends PagerAdapter {
+        @Override
+        public int getCount() {
+            return mPagerList.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            //实例化条目
+            BasePager basePager = mPagerList.get(position);
+            View view = basePager.mRootView;
+            container.addView(view);
+            return view;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+            super.destroyItem(container, position, object);
+        }
+    }
+
+//    //防止重复加载
+//    @Override
+//    public void onAttachFragment(Fragment fragment) {
+//        if (mContactsFragmentPager == null && fragment instanceof ContactsFragmentPager)
+//            mContactsFragmentPager = (BaseFragment) fragment;
+//        if (mMapFragment == null && fragment instanceof ContactsFragment)
+//            mMapFragment = (BaseFragment) fragment;
+//
+//    }
+
+    class MyAdapter extends FragmentPagerAdapter {
+        public MyAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Log.e("fragmentAdapter", "===========pass here===========");
+            return mFragmentPagerList.get(position);
+        }
 
         @Override
         public int getCount() {
-            return mUsernames.size();
+            return mFragmentPagerList.size();
         }
-
-        @Override
-        public String getItem(int position) {
-            return mUsernames.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            ViewHolder viewHolder;
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                convertView = View.inflate(mContext, R.layout.list_item_contact, null);
-
-//                viewHolder.iv_contact_icon = (ImageView) convertView.findViewById(R.id.iv_contact_icon);
-                viewHolder.tv_contact = (TextView) convertView.findViewById(R.id.tv_contact_name);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-//            viewHolder.iv_contact_icon.setImageResource(R.mipmap.ic_launcher);
-            viewHolder.tv_contact.setText(getItem(position));
-
-            return convertView;
-        }
-    }
-
-    static class ViewHolder {
-        public ImageView iv_contact_icon;
-        public TextView tv_contact;
     }
 
 }
