@@ -38,6 +38,16 @@ public class GroupFragmentPager extends BaseFragment {
     private GroupAdapter mGroupAdapter;
     private RelativeLayout rl_searchview;
 
+    private GroupFragmentPager() {
+        super();
+    }
+    private static GroupFragmentPager instance;
+    public static GroupFragmentPager getInstance(){
+        if(instance == null)
+            instance = new GroupFragmentPager();
+        return instance;
+    }
+
     @Override
     public View initView() {
         mGroupPager = inflate(mContext, R.layout.pager_contacts,null);

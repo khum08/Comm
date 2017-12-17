@@ -78,7 +78,7 @@ public class GroupInfoActivity extends AppCompatActivity {
                     break;
                 case GET_BLACKNUMBER:
                     AlertDialog.Builder builder = new AlertDialog.Builder(GroupInfoActivity.this);
-                    String[] blacknumbers = (String[]) mBlackNumbers.toArray();
+                    String[] blacknumbers = mBlackNumbers.toArray(new String[mBlackNumbers.size()]);
                     builder.setItems(blacknumbers,null);
                     builder.show();
                     break;

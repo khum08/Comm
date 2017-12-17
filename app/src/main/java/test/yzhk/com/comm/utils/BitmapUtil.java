@@ -61,8 +61,7 @@ public class BitmapUtil {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(headerimage);
-            Bitmap bitmap = BitmapFactory.decodeStream(fis);
-            return bitmap;
+            return BitmapFactory.decodeStream(fis);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;

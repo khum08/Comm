@@ -66,6 +66,17 @@ public class ContactsFragment extends BaseFragment {
     private MyAdapter mAdapter;
     private ArrayList<BaseFragment> mFragmentPagerList;
 
+    private ContactsFragment() {
+        super();
+    }
+    private static ContactsFragment mContactsFragment;
+    public static ContactsFragment getInstance(){
+        if(mContactsFragment==null){
+            mContactsFragment= new ContactsFragment();
+        }
+        return mContactsFragment;
+    }
+
     @Override
     public View initView() {
 
@@ -97,8 +108,8 @@ public class ContactsFragment extends BaseFragment {
 
     private void initData2() {
         mFragmentPagerList = new ArrayList<>();
-        mContactsFragmentPager = new ContactsFragmentPager();
-        mGroupFragmentPager = new GroupFragmentPager();
+        mContactsFragmentPager = ContactsFragmentPager.getInstance();
+        mGroupFragmentPager = GroupFragmentPager.getInstance();
         mFragmentPagerList.add(mContactsFragmentPager);
         mFragmentPagerList.add(mGroupFragmentPager);
 

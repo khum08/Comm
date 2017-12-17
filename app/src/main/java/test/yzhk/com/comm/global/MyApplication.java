@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Process;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
@@ -32,8 +33,8 @@ public class MyApplication extends Application {
         super.onCreate();
         list = new ArrayList<>();
         mContext = this;
-        initEasemob();
-
+        initEaseMob();
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     public void addActivity(AppCompatActivity activity){
@@ -49,7 +50,7 @@ public class MyApplication extends Application {
     }
 
     //初始化环信sdk
-    private void initEasemob() {
+    private void initEaseMob() {
         int pid = Process.myPid();
         String appName = getAppName(pid);
         if (appName == null || !appName.equalsIgnoreCase(mContext.getPackageName())) {

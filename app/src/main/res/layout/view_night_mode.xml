@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:checked="true"
+        android:checked="false"
         android:shadowColor="@color/name"
         android:textColor="@color/name"
         android:textOff="关"

@@ -6,6 +6,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import test.yzhk.com.comm.R;
 import test.yzhk.com.comm.UI.view.SettingItemView;
@@ -30,25 +31,27 @@ public class SettingActivity extends BaseActivity {
         initOut();
 
     }
+
     //退出应用功能
     private void initOut() {
         findViewById(R.id.item_appout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mApplication!=null){
+                if (mApplication != null) {
                     mApplication.closeApp();
                 }
 
             }
         });
     }
+
     //分享功能
     private void initShare() {
         SettingItemView item_share = (SettingItemView) findViewById(R.id.item_share);
         item_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtil.showToast(SettingActivity.this,"这是分享功能");
+                ToastUtil.showToast(SettingActivity.this, "这是分享功能");
             }
         });
     }
@@ -56,7 +59,21 @@ public class SettingActivity extends BaseActivity {
     //夜间操作
     private void initNightMode() {
         SwitchCompat tb_nightmode = (SwitchCompat) findViewById(R.id.tb_nightmode);
-        //// TODO: 2017/12/6
+        tb_nightmode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //TODO
+
+//                if(isChecked){
+//                    getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//                }else{
+//                    getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//                }
+//                PrefUtil.putBoolean(SettingActivity.this,"nightMode",isChecked);
+////                SettingActivity.this.recreate();
+
+            }
+        });
     }
 
 
@@ -66,7 +83,7 @@ public class SettingActivity extends BaseActivity {
         item_textsize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtil.showToast(SettingActivity.this,"改变字体大小");
+                ToastUtil.showToast(SettingActivity.this, "改变字体大小");
             }
         });
     }
@@ -77,7 +94,7 @@ public class SettingActivity extends BaseActivity {
         item_pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtil.showToast(SettingActivity.this,"进入支付宝或微信支付平台");
+                ToastUtil.showToast(SettingActivity.this, "进入支付宝或微信支付平台");
             }
         });
 
@@ -102,7 +119,7 @@ public class SettingActivity extends BaseActivity {
         mItem_contact_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtil.showToast(SettingActivity.this,"显示与作者聊天的界面");
+                ToastUtil.showToast(SettingActivity.this, "显示与作者聊天的界面");
             }
         });
     }

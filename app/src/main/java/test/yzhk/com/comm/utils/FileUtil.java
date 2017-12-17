@@ -87,10 +87,7 @@ public class FileUtil {
             dir = context.getExternalCacheDir();
         }
         File file = new File(dir, filename);
-        if(file.exists()){
-            return true;
-        }
-        return false;
+        return file.exists();
     }
 
     //查看文件

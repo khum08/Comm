@@ -59,6 +59,17 @@ public class ContactsFragmentPager extends BaseFragment {
     private TextView tv_isloading_group;
     private TextView tv_fri_count;
 
+    private ContactsFragmentPager() {
+        super();
+    }
+    private static ContactsFragmentPager instance;
+    public static ContactsFragmentPager getInstance(){
+        if(instance==null){
+            instance = new ContactsFragmentPager();
+        }
+        return instance;
+    }
+
     @Override
     public View initView() {
         View contactsPager = inflate(mContext, R.layout.pager_contacts, null);

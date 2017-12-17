@@ -213,11 +213,11 @@ public class MainActivity extends BaseActivity {
         mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    //初始化fragment
+    //初始化fragment 单例化
     private void initFragments() {
-        mChatFragment = new ChatFragment();
-        mMapFragment = new ContactsFragment();
-        mSelfFragment = new SelfFragment();
+        mChatFragment = ChatFragment.getInstance();
+        mMapFragment = ContactsFragment.getInstance();
+        mSelfFragment =SelfFragment.getInstance();
 
         mFragments = new Fragment[]{mChatFragment, mMapFragment, mSelfFragment};
 
@@ -237,7 +237,7 @@ public class MainActivity extends BaseActivity {
         transaction.show(mFragments[Index]).commitAllowingStateLoss();
     }
 
-    //防止重复加载
+    //防止重复加载 也可以使用单例 或者fragment的replace
     @Override
     public void onAttachFragment(Fragment fragment) {
         if (mChatFragment == null && fragment instanceof ChatFragment)
@@ -253,8 +253,7 @@ public class MainActivity extends BaseActivity {
 //    }
 
     public ChatFragment getConversationFragment(){
-        ChatFragment conversationFragment = (ChatFragment) mFm.findFragmentByTag(TAG_CONVERSATION);
-        return conversationFragment;
+        return (ChatFragment) mFm.findFragmentByTag(TAG_CONVERSATION);
 
     }
 

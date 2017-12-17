@@ -46,6 +46,19 @@ public class SelfFragment extends BaseFragment {
     private SettingItemView mItem_signning;
     private SettingItemView mItem_money;
 
+    private SelfFragment() {
+        super();
+    }
+    private static SelfFragment mSelfFragment;
+    public static SelfFragment getInstance(){
+        if(mSelfFragment==null){
+            mSelfFragment = new SelfFragment();
+        }
+        return mSelfFragment;
+    }
+
+
+
     @Override
     public View initView() {
         selfPage = View.inflate(mContext, R.layout.fragment_self, null);

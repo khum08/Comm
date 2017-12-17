@@ -811,7 +811,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
                     break;
                 case GET_LOCATION:
-                    BDLocation location = (BDLocation) data.getParcelableExtra("location");
+                    BDLocation location = data.getParcelableExtra("location");
                     final EMMessage locationMessage = EMMessage.createLocationSendMessage(location.getLatitude(), location.getLongitude()
                             , location.getAddrStr(), mUserName);
                     if (mChatType == EMMessage.ChatType.GroupChat)

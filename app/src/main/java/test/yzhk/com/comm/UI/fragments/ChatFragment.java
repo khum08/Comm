@@ -75,6 +75,17 @@ public class ChatFragment extends BaseFragment {
     };
     private Map<String, EMConversation> mAllConversations;
     private long mCurrentTimeMillis;
+    private ChatFragment() {
+        super();
+    }
+
+    private static ChatFragment mChatFragment;
+    public static ChatFragment getInstance() {
+        if(mChatFragment==null){
+            mChatFragment = new ChatFragment();
+        }
+        return mChatFragment;
+    }
 
     @Override
     public View initView() {
