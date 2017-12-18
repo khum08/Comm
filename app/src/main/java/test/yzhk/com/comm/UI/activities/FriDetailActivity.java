@@ -11,7 +11,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.exceptions.HyphenateException;
 
 import test.yzhk.com.comm.R;
-import test.yzhk.com.comm.UI.view.SettingItemView;
+import test.yzhk.com.comm.UI.widget.SettingItemView;
 import test.yzhk.com.comm.utils.ToastUtil;
 
 public class FriDetailActivity extends BaseActivity {

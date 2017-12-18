@@ -1,4 +1,4 @@
-package test.yzhk.com.comm.UI.view;
+package test.yzhk.com.comm.UI.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;

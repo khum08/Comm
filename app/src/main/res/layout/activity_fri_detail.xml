@@ -23,7 +23,7 @@
             android:layout_margin="@dimen/dp20"/>
     </LinearLayout>
 
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_remove"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,14 +31,14 @@
         me:settingName="删除好友"
         />
 
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_add2black"
         me:iv_left="@drawable/ic_speaker_notes_off_grey_600_24dp"
         me:settingName="加入黑名单"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_more"
         me:iv_left="@drawable/ic_more"
         me:settingName="更多"

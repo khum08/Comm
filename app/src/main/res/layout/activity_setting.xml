@@ -27,7 +27,7 @@
 
     <include
         layout="@layout/view_night_mode"/>
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_textsize"
         me:iv_left="@drawable/ic_text_format_teal_700_24dp"
         me:settingName="字体大小"
@@ -38,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="14dp"
         android:background="@color/white"/>
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="14dp"
         android:background="@color/white"/>
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_writer_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         me:settingName="作者信息"
         />
 
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_contact_setting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
         />
 
 
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_pay"
         me:iv_left="@drawable/ic_payment_teal_700_24dp"
         me:settingName="支持作者"
@@ -77,7 +77,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@color/white"/>
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_appout"
         me:iv_left="@drawable/ic_all_out_teal_700_24dp"
         me:settingName="退出应用"

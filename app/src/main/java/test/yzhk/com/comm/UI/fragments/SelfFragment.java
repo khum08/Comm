@@ -22,8 +22,8 @@ import test.yzhk.com.comm.UI.activities.NickSigningActivity;
 import test.yzhk.com.comm.UI.activities.ServiceActivity;
 import test.yzhk.com.comm.UI.activities.SettingActivity;
 import test.yzhk.com.comm.UI.activities.WalletActivity;
-import test.yzhk.com.comm.UI.view.CircleImageView;
-import test.yzhk.com.comm.UI.view.SettingItemView;
+import test.yzhk.com.comm.UI.widget.CircleImageView;
+import test.yzhk.com.comm.UI.widget.SettingItemView;
 import test.yzhk.com.comm.utils.PrefUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 

@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 
 import test.yzhk.com.comm.R;
-import test.yzhk.com.comm.UI.view.SettingItemView;
+import test.yzhk.com.comm.UI.widget.SettingItemView;
 import test.yzhk.com.comm.utils.ToastUtil;
 
 public class SettingActivity extends BaseActivity {

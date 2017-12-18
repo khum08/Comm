@@ -17,7 +17,7 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <test.yzhk.com.comm.UI.view.CircleImageView
+        <test.yzhk.com.comm.UI.widget.CircleImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/ci_headerview"
             android:layout_width="75dp"
@@ -47,14 +47,14 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="@color/white"/>
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_nickname"
         me:iv_left="@drawable/ic_bookmark_border_grey_600_24dp"
         me:settingName="昵称:小明"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_signning"
         me:iv_left="@drawable/ic_loyalty_grey_600_24dp"
         me:settingName="签名:天高任鸟飞"
@@ -66,14 +66,14 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="@color/white"/>
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_money"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         me:iv_left="@drawable/ic_attach_money_grey_600_24dp"
         me:settingName="钱包"
         />
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_lifeservice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
         android:layout_height="10dp"
         android:background="@color/white"/>
 
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_signout"
         me:iv_left="@drawable/ic_out"
         me:settingName="退出登录"
@@ -100,7 +100,7 @@
         android:layout_height="10dp"
         android:background="@color/white"/>
 
-    <test.yzhk.com.comm.UI.view.SettingItemView
+    <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_setting"
         me:iv_left="@drawable/ic_settings"
         me:settingName="设置"
