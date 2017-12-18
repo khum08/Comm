@@ -25,7 +25,6 @@
             android:layout_marginTop="@dimen/dp20"
             android:layout_weight="0.56"
             android:padding="@dimen/dp10"
-            android:src="@drawable/def"
             app:border_color="@color/name"
             app:border_width="2dp"/>
 
