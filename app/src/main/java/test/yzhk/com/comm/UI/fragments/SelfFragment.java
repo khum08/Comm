@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 
@@ -28,6 +29,7 @@ import test.yzhk.com.comm.utils.PrefUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 
 import static android.app.Activity.RESULT_OK;
+import static test.yzhk.com.comm.R.id.ci_headerview;
 
 /**
  * Created by 大傻春 on 2017/11/24.
@@ -63,7 +65,7 @@ public class SelfFragment extends BaseFragment {
     public View initView() {
         selfPage = View.inflate(mContext, R.layout.fragment_self, null);
         TextView tv_title = (TextView) selfPage.findViewById(R.id.tv_title);
-        mCi_headerview = (CircleImageView) selfPage.findViewById(R.id.ci_headerview);
+        mCi_headerview = (CircleImageView) selfPage.findViewById(ci_headerview);
 
         tv_title.setText("我");
         return selfPage;
@@ -138,6 +140,7 @@ public class SelfFragment extends BaseFragment {
     }
 
     private void initHeaderView() {
+        Glide.with(mContext).load(R.drawable.def).into(mCi_headerview);
         mCi_headerview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
