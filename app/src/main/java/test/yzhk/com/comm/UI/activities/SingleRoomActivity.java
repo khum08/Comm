@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import test.yzhk.com.comm.R;
+import test.yzhk.com.comm.global.MessageEvent;
 import test.yzhk.com.comm.utils.FileUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 import test.yzhk.com.comm.utils.UriUtil;
@@ -444,6 +445,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EventBus.getDefault().post(new MessageEvent(REFRESH_DATA));
                 finish();
                 Intent intent = new Intent(SingleRoomActivity.this, MainActivity.class);
                 startActivity(intent);
@@ -844,7 +846,7 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onBackPressed() {
-        EventBus.getDefault().post(REFRESH_DATA);
+        EventBus.getDefault().post(new MessageEvent(REFRESH_DATA));
         super.onBackPressed();
     }
 }

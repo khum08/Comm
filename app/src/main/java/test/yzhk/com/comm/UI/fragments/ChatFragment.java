@@ -445,7 +445,7 @@ public class ChatFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
         List<EMMessage> messages = event.getMessages();
-        if (messages != null) {
+        if (messages != null || event.getCommand()==REFRESH_DATA ) {
             new Thread() {
                 @Override
                 public void run() {
@@ -463,28 +463,6 @@ public class ChatFragment extends BaseFragment {
             }.start();
         }
         Log.e(LOG_TAG, "pass here");
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(int command) {
-        if (command == REFRESH_DATA) {
-            new Thread() {
-                @Override
-                public void run() {
-
-                    mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
-                    if (mAllConversations != null) {
-                        mConversationList = new ArrayList<String>();
-                        for (Map.Entry entry : mAllConversations.entrySet()) {
-                            String conversationId = (String) entry.getKey();
-                            mConversationList.add(conversationId);
-                        }
-                        mHandler.sendEmptyMessage(GET_DATA);
-                    }
-                }
-            }.start();
-        }
-
     }
 
 }
