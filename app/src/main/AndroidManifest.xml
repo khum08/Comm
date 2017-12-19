@@ -42,10 +42,10 @@
         android:supportsRtl="true"
         android:theme="@style/MyAppTheme">
         <activity
-            android:screenOrientation="portrait"
             android:name=".UI.activities.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -53,9 +53,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:screenOrientation="portrait"
             android:name=".UI.activities.LoginActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
         </activity>
 
         <meta-data
@@ -94,42 +94,60 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".UI.activities.FriDetailActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".UI.activities.FriDetailActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity
-            android:screenOrientation="portrait"
             android:name=".UI.activities.SingleRoomActivity"
             android:label="@string/title_activity_single_room"
+            android:screenOrientation="portrait"
             android:theme="@style/MyAppTheme">
         </activity>
-        <activity android:name=".UI.activities.BlackNumberActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".UI.activities.BlackNumberActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".UI.activities.MapActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".UI.activities.SettingActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".UI.activities.MapActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".UI.activities.SettingActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".UI.activities.NickSigningActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".UI.activities.GroupMakerActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".UI.activities.ChatRoomMakerActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".UI.activities.ServiceActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".UI.activities.GroupInfoActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".UI.activities.FileShareActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".UI.activities.NickSigningActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".UI.activities.GroupMakerActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".UI.activities.ChatRoomMakerActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".UI.activities.ServiceActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".UI.activities.GroupInfoActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".UI.activities.FileShareActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".UI.activities.InviteFriendActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".UI.activities.InviteFriendActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".UI.activities.WalletActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".UI.activities.WalletActivity"
+            android:screenOrientation="portrait">
         </activity>
+
+        <service
+            android:name=".UI.services.MsgListenerService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>

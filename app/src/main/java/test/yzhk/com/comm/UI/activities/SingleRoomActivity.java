@@ -42,6 +42,8 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.exceptions.HyphenateException;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,24 +54,24 @@ import test.yzhk.com.comm.utils.ToastUtil;
 import test.yzhk.com.comm.utils.UriUtil;
 
 import static com.hyphenate.chat.EMMessage.createImageSendMessage;
+import static test.yzhk.com.comm.global.C.GET_DATA;
+import static test.yzhk.com.comm.global.C.GET_GROUP_DATA;
+import static test.yzhk.com.comm.global.C.GET_LOCATION;
+import static test.yzhk.com.comm.global.C.GET_PHOTO;
+import static test.yzhk.com.comm.global.C.OPEN_CAMERA;
+import static test.yzhk.com.comm.global.C.OPEN_VIDEO;
+import static test.yzhk.com.comm.global.C.REFRESH_DATA;
 
 
 public class SingleRoomActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String TAG = "SingleRoomActivity";
-    private static final int GET_PHOTO = 2;
-    private static final int OPEN_CAMERA = 3;
-    private static final int OPEN_VIDEO = 4;
-    private static final int GET_LOCATION = 147;
-    private static final int GET_DATA = 186;
-    private static final int REFRESH_DATA = 917;
-    private static final int GET_GROUP_DATA =550;
+
     private String mUserName;
     private ListView mLv_chat_content;
     private ChatAdapter mChatAdapter;
 
     private String mMe;
-
 
     public List<EMMessage> conversationlist = new ArrayList<>();
     private List<EMMessage> showMessages = new ArrayList<>();
@@ -840,6 +842,11 @@ public class SingleRoomActivity extends BaseActivity implements View.OnClickList
 
     }
 
+    @Override
+    public void onBackPressed() {
+        EventBus.getDefault().post(REFRESH_DATA);
+        super.onBackPressed();
+    }
 }
 
 

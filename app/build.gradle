@@ -47,4 +47,5 @@ dependencies {
 
     /*添加二维码扫描依赖*/
     compile 'com.github.yuzhiqiang1993:zxing:2.0.0'
+    compile 'org.greenrobot:eventbus:3.1.1'
 }

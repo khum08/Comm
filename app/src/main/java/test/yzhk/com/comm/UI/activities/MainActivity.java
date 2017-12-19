@@ -27,6 +27,7 @@ import test.yzhk.com.comm.UI.fragments.BaseFragment;
 import test.yzhk.com.comm.UI.fragments.ChatFragment;
 import test.yzhk.com.comm.UI.fragments.ContactsFragment;
 import test.yzhk.com.comm.UI.fragments.SelfFragment;
+import test.yzhk.com.comm.UI.services.MsgListenerService;
 
 
 public class MainActivity extends BaseActivity {
@@ -75,7 +76,7 @@ public class MainActivity extends BaseActivity {
         }
 
     };
-
+    private Intent mService;
 
 
     @Override
@@ -96,6 +97,8 @@ public class MainActivity extends BaseActivity {
         checkConnect();
 //        addFri();
         initFragments();
+        mService = new Intent(this, MsgListenerService.class);
+        startService(mService);
 
     }
 
@@ -268,5 +271,11 @@ public class MainActivity extends BaseActivity {
         }
         Log.e("ttttttttttt","zou le mainActivity");
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(mService);
     }
 }

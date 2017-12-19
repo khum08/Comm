@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,7 @@ import test.yzhk.com.comm.UI.activities.ChatRoomMakerActivity;
 import test.yzhk.com.comm.UI.activities.GroupMakerActivity;
 import test.yzhk.com.comm.UI.activities.SingleRoomActivity;
 import test.yzhk.com.comm.UI.activities.WalletActivity;
+import test.yzhk.com.comm.global.MessageEvent;
 import test.yzhk.com.comm.utils.DateUtil;
 import test.yzhk.com.comm.utils.ToastUtil;
 
@@ -41,6 +46,10 @@ import static test.yzhk.com.comm.R.id.item_chatroom;
 import static test.yzhk.com.comm.R.id.item_group;
 import static test.yzhk.com.comm.R.id.item_paymoney;
 import static test.yzhk.com.comm.R.id.item_scan;
+import static test.yzhk.com.comm.global.C.GET_DATA;
+import static test.yzhk.com.comm.global.C.LOG_TAG;
+import static test.yzhk.com.comm.global.C.REFRESH_DATA;
+import static test.yzhk.com.comm.global.C.REQUEST_CODE_SCAN;
 
 /**
  * Created by 大傻春 on 2017/11/24.
@@ -48,11 +57,9 @@ import static test.yzhk.com.comm.R.id.item_scan;
 
 public class ChatFragment extends BaseFragment {
 
-    private static final int GET_DATA = 644;
-    private static final int REFRESH_DATA = 61;
-    private static final int REQUEST_CODE_SCAN = 407;
+
     public View mChatView;
-    private static final String TAG = "ChatFragment";
+
     private ConversationAdapter mAdapter;
 
     private ListView mLv_chat;
@@ -75,13 +82,15 @@ public class ChatFragment extends BaseFragment {
     };
     private Map<String, EMConversation> mAllConversations;
     private long mCurrentTimeMillis;
+
     private ChatFragment() {
         super();
     }
 
     private static ChatFragment mChatFragment;
+
     public static ChatFragment getInstance() {
-        if(mChatFragment==null){
+        if (mChatFragment == null) {
             mChatFragment = new ChatFragment();
         }
         return mChatFragment;
@@ -114,7 +123,7 @@ public class ChatFragment extends BaseFragment {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case item_scan:
-                        Intent intent = new Intent(mContext,  CaptureActivity.class);
+                        Intent intent = new Intent(mContext, CaptureActivity.class);
                         startActivityForResult(intent, REQUEST_CODE_SCAN);
                         break;
                     case item_paymoney:
@@ -139,6 +148,7 @@ public class ChatFragment extends BaseFragment {
 
     @Override
     public void initData() {
+        EventBus.getDefault().register(this);
         mLv_chat = (ListView) mChatView.findViewById(R.id.lv_chat);
         new Thread() {
             @Override
@@ -181,7 +191,7 @@ public class ChatFragment extends BaseFragment {
 
         initSwipeRefresh();
         //监听消息
-        EMClient.getInstance().chatManager().addMessageListener(msgListener);
+
     }
 
     //初始化下拉刷新控件
@@ -200,7 +210,7 @@ public class ChatFragment extends BaseFragment {
                         mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
                         if (mAllConversations != null) {
                             for (Map.Entry<String, EMConversation> entry : mAllConversations.entrySet()) {
-                                if(!mConversationList.contains(entry.getKey())){
+                                if (!mConversationList.contains(entry.getKey())) {
                                     mConversationList.add(entry.getKey());
                                 }
                             }
@@ -266,7 +276,7 @@ public class ChatFragment extends BaseFragment {
                                 //指定会话消息未读数清零
                                 EMConversation remove = mAllConversations.remove(conversationId);
                                 remove.markAllMessagesAsRead();
-                                mAllConversations.put(conversationId,remove);
+                                mAllConversations.put(conversationId, remove);
                                 mHandler.sendEmptyMessage(REFRESH_DATA);
                             }
                         }.start();
@@ -377,7 +387,7 @@ public class ChatFragment extends BaseFragment {
                 mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
                 if (mAllConversations != null) {
                     for (Map.Entry<String, EMConversation> entry : mAllConversations.entrySet()) {
-                        if(!mConversationList.contains(entry.getKey())){
+                        if (!mConversationList.contains(entry.getKey())) {
                             mConversationList.add(entry.getKey());
                         }
                     }
@@ -388,42 +398,11 @@ public class ChatFragment extends BaseFragment {
     }
 
     //监听消息的接收
-    EMMessageListener msgListener = new EMMessageListener() {
 
-        @Override
-        public void onMessageReceived(List<EMMessage> messages) {
-            //收到消息
-            getNewMessages();
-        }
-
-        @Override
-        public void onCmdMessageReceived(List<EMMessage> messages) {
-            //收到透传消息
-        }
-
-        @Override
-        public void onMessageRead(List<EMMessage> messages) {
-            //收到已读回执
-        }
-
-        @Override
-        public void onMessageDelivered(List<EMMessage> message) {
-            //收到已送达回执
-        }
-        @Override
-        public void onMessageRecalled(List<EMMessage> messages) {
-            //消息被撤回
-        }
-
-        @Override
-        public void onMessageChanged(EMMessage message, Object change) {
-            //消息状态变动
-        }
-    };
 
     //接收到新消息的逻辑
     private void getNewMessages() {
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
@@ -444,11 +423,12 @@ public class ChatFragment extends BaseFragment {
     public void onDestroy() {
         super.onDestroy();
         //销毁监听器
-        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
+        EventBus.getDefault().unregister(this);
+
     }
 
     //给conversation排序
-    private void sort(Map<String,EMConversation> map){
+    private void sort(Map<String, EMConversation> map) {
     }
 
     @Override
@@ -456,9 +436,55 @@ public class ChatFragment extends BaseFragment {
         if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                ToastUtil.showToast(mContext,content);
+                ToastUtil.showToast(mContext, content);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        List<EMMessage> messages = event.getMessages();
+        if (messages != null) {
+            new Thread() {
+                @Override
+                public void run() {
+
+                    mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
+                    if (mAllConversations != null) {
+                        mConversationList = new ArrayList<String>();
+                        for (Map.Entry entry : mAllConversations.entrySet()) {
+                            String conversationId = (String) entry.getKey();
+                            mConversationList.add(conversationId);
+                        }
+                        mHandler.sendEmptyMessage(GET_DATA);
+                    }
+                }
+            }.start();
+        }
+        Log.e(LOG_TAG, "pass here");
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(int command) {
+        if (command == REFRESH_DATA) {
+            new Thread() {
+                @Override
+                public void run() {
+
+                    mAllConversations = EMClient.getInstance().chatManager().getAllConversations();
+                    if (mAllConversations != null) {
+                        mConversationList = new ArrayList<String>();
+                        for (Map.Entry entry : mAllConversations.entrySet()) {
+                            String conversationId = (String) entry.getKey();
+                            mConversationList.add(conversationId);
+                        }
+                        mHandler.sendEmptyMessage(GET_DATA);
+                    }
+                }
+            }.start();
+        }
+
+    }
+
 }
