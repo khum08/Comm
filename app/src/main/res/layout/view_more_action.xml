@@ -65,7 +65,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:drawableTop="@drawable/ic_call_green_a700_48dp"
+        android:drawableTop="@drawable/ic_call_green_700_48dp"
         android:gravity="center"
         android:padding="@dimen/dp8"
         android:text="语音电话"/>

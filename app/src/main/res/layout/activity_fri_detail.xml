@@ -40,7 +40,7 @@
         />
     <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_more"
-        me:iv_left="@drawable/ic_more"
+        me:iv_left="@drawable/ic_more_horiz_grey_700_24dp"
         me:settingName="更多"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

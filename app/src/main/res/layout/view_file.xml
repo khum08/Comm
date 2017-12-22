@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:padding="5dp"
-        android:src="@drawable/ic_file_download_teal_a700_24dp"/>
+        android:src="@drawable/ic_file_download_teal_700_24dp"/>
     <TextView
         android:id="@+id/tv_read"
         android:layout_alignParentRight="true"

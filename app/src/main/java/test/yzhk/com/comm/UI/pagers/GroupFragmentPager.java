@@ -132,7 +132,7 @@ public class GroupFragmentPager extends BaseFragment {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.iv_contact_icon.setImageResource(R.drawable.ic_people_name_24dp);
+            viewHolder.iv_contact_icon.setImageResource(R.drawable.ic_person_teal_700_24dp);
             EMGroup item = getItem(position);
             viewHolder.tv_contact.setText(item.getGroupName()+"("+ item.getMemberCount()+"/"+ item.getMaxUserCount()+"人)");
             return convertView;

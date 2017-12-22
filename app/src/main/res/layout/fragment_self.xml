@@ -87,7 +87,7 @@
 
     <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_signout"
-        me:iv_left="@drawable/ic_out"
+        me:iv_left="@drawable/ic_call_missed_outgoing_grey_700_24dp"
         me:settingName="退出登录"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
 
     <test.yzhk.com.comm.UI.widget.SettingItemView
         android:id="@+id/item_setting"
-        me:iv_left="@drawable/ic_settings"
+        me:iv_left="@drawable/ic_settings_grey_600_24dp"
         me:settingName="设置"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

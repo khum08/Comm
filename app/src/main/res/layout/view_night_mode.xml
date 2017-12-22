@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:padding="@dimen/dp5"
-        android:src="@drawable/ic_voicemail_teal_a700_24dp"/>
+        android:src="@drawable/ic_voicemail_teal_700_24dp"/>
 
     <TextView
         android:layout_width="match_parent"

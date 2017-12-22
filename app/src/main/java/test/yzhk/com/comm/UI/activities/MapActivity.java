@@ -289,7 +289,7 @@ public class MapActivity extends BaseActivity implements View.OnClickListener {
             mBaiduMap.setMyLocationData(locData);
             // 设置定位图层的配置（定位模式，是否允许方向信息，用户自定义定位图标）
             mCurrentMarker = BitmapDescriptorFactory
-                    .fromResource(R.drawable.ic_location_on_pink_800_18dp);
+                    .fromResource(R.drawable.ic_location_on_purple_800_18dp);
             mConfig = new MyLocationConfiguration(MyLocationConfiguration.LocationMode.NORMAL, true, mCurrentMarker);
             mBaiduMap.setMyLocationConfiguration(mConfig);
 

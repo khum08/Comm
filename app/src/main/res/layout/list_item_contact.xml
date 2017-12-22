@@ -13,7 +13,7 @@
         android:layout_marginBottom="@dimen/dp8"
         android:layout_marginLeft="@dimen/dp20"
         android:padding="@dimen/dp10"
-        android:src="@drawable/ic_head_image"
+        android:src="@drawable/ic_person_teal_700_24dp"
         app:border_color="@color/name"
         app:border_width="2dp"/>
     <TextView
