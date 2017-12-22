@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="test.yzhk.com.comm.UI.activities.BlackNumberActivity">
+    tools:context="test.yzhk.com.comm.view.activities.BlackNumberActivity">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_blacknumber"
         android:layout_width="match_parent"

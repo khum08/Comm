@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:gravity="center_horizontal"
               android:orientation="vertical"
-              tools:context="test.yzhk.com.comm.UI.activities.LoginActivity">
+              tools:context="test.yzhk.com.comm.view.activities.LoginActivity">
 
     <include layout="@layout/custom_actionbar"/>
     <!-- Login progress -->

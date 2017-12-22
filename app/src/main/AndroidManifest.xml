@@ -42,7 +42,7 @@
         android:supportsRtl="true"
         android:theme="@style/MyAppTheme">
         <activity
-            android:name=".UI.activities.MainActivity"
+            android:name=".view.activities.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
@@ -53,7 +53,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".UI.activities.LoginActivity"
+            android:name=".view.activities.LoginActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
         </activity>
@@ -95,56 +95,56 @@
         </receiver>
 
         <activity
-            android:name=".UI.activities.FriDetailActivity"
+            android:name=".view.activities.FriDetailActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".UI.activities.SingleRoomActivity"
+            android:name=".view.activities.SingleRoomActivity"
             android:label="@string/title_activity_single_room"
             android:screenOrientation="portrait"
             android:theme="@style/MyAppTheme">
         </activity>
         <activity
-            android:name=".UI.activities.BlackNumberActivity"
+            android:name=".view.activities.BlackNumberActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".UI.activities.MapActivity"
+            android:name=".view.activities.MapActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".UI.activities.SettingActivity"
+            android:name=".view.activities.SettingActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".UI.activities.NickSigningActivity"
+            android:name=".view.activities.NickSigningActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".UI.activities.GroupMakerActivity"
+            android:name=".view.activities.GroupMakerActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".UI.activities.ChatRoomMakerActivity"
+            android:name=".view.activities.ChatRoomMakerActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".UI.activities.ServiceActivity"
+            android:name=".view.activities.ServiceActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".UI.activities.GroupInfoActivity"
+            android:name=".view.activities.GroupInfoActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".UI.activities.FileShareActivity"
+            android:name=".view.activities.FileShareActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".UI.activities.InviteFriendActivity"
+            android:name=".view.activities.InviteFriendActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".UI.activities.WalletActivity"
+            android:name=".view.activities.WalletActivity"
             android:screenOrientation="portrait">
         </activity>
 
         <service
-            android:name=".UI.services.MsgListenerService"
+            android:name=".view.services.MsgListenerService"
             android:enabled="true"
             android:exported="true">
         </service>

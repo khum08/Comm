@@ -4,7 +4,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
     >
-    <test.yzhk.com.comm.UI.widget.CircleImageView
+    <test.yzhk.com.comm.view.widget.CircleImageView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/iv_contact_icon"
         android:layout_width="30dp"

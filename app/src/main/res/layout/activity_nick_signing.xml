@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="test.yzhk.com.comm.UI.activities.NickSigningActivity">
+    tools:context="test.yzhk.com.comm.view.activities.NickSigningActivity">
     <include layout="@layout/custom_actionbar"/>
     <EditText
         android:id="@+id/et_content_nick"
